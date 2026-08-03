@@ -26,7 +26,7 @@
   --font-display: "Space Grotesk", "Segoe UI", sans-serif;
   --font-body: "Inter", "Segoe UI", sans-serif;
   --font-mono: "IBM Plex Mono", "Courier New", monospace;
-  --font-bn: "Noto Sans Bengali", "Inter", sans-serif;
+  --font-bn: "Kalpurush", "Noto Sans Bengali", "Inter", sans-serif;
 
   /* ---- Layout ---- */
   --container: 1220px;
@@ -66,7 +66,14 @@
   --glass-bg-strong: rgba(255, 255, 255, 0.78);
   --glass-border: rgba(255, 255, 255, 0.75);
   --glass-shadow: 0 20px 60px rgba(11, 27, 51, 0.12);
-  --acrylic-bg: rgba(246, 245, 241, 0.94);
+  --acrylic-bg: rgba(246, 245, 241, 0.96);
+
+  /* ---- Liquid-glass surface lighting (specular sheen + refractive edge tint) ---- */
+  --glass-sheen-1: rgba(255, 255, 255, 0.6);   /* top-left specular highlight */
+  --glass-sheen-2: rgba(47, 111, 237, 0.09);   /* cool refraction, bottom-right */
+  --glass-sheen-3: rgba(228, 52, 47, 0.05);    /* warm chromatic fringe, top-right */
+  --glass-rim-top: rgba(255, 255, 255, 0.95);  /* top hairline catching light */
+  --glass-rim-bottom: rgba(11, 27, 51, 0.1);   /* bottom hairline, glass thickness */
 
   --nav-bg: rgba(246, 245, 241, 0.7);
   --nav-bg-scrolled: rgba(255, 255, 255, 0.75);
@@ -84,37 +91,44 @@
   color-scheme: light;
 }
 
-/* ---- Dark theme ---- */
+/* ---- Dark theme — true-black canvas, tuned for AAA-level contrast ---- */
 :root[data-theme="dark"] {
-  --bg: #0a0e17;
-  --bg-alt: #0f1420;
-  --surface: #141a29;
-  --surface-raised: #171d2e;
+  --bg: #06070a;
+  --bg-alt: #0a0b10;
+  --surface: #101219;
+  --surface-raised: #14161f;
 
-  --text-heading: #eef1f8;         /* "professional color" base for big text */
-  --text-heading-accent: #ff5d57;  /* signal red, lifted for dark contrast */
+  --text-heading: #f3f5fa;         /* "professional color" base for big text */
+  --text-heading-accent: #ff6b60;  /* signal red, lifted for dark contrast */
   --text-body: #ffffff;            /* solid white — required for key texts */
   --text-body-key: #ffffff;        /* services + FAQ key text in dark mode */
-  --text-muted: #aab3c5;
+  --text-muted: #aeb6c8;
   --text-on-dark-surface: #ffffff;
 
-  --border-soft: rgba(255, 255, 255, 0.09);
-  --border-strong: rgba(255, 255, 255, 0.16);
+  --border-soft: rgba(255, 255, 255, 0.08);
+  --border-strong: rgba(255, 255, 255, 0.15);
 
-  --glass-bg: rgba(255, 255, 255, 0.055);
-  --glass-bg-strong: rgba(255, 255, 255, 0.09);
-  --glass-border: rgba(255, 255, 255, 0.14);
-  --glass-shadow: 0 20px 60px rgba(0, 0, 0, 0.45);
-  --acrylic-bg: rgba(10, 14, 23, 0.94);
+  --glass-bg: rgba(255, 255, 255, 0.05);
+  --glass-bg-strong: rgba(255, 255, 255, 0.085);
+  --glass-border: rgba(255, 255, 255, 0.13);
+  --glass-shadow: 0 24px 70px rgba(0, 0, 0, 0.6);
+  --acrylic-bg: rgba(6, 7, 10, 0.97);
 
-  --nav-bg: rgba(10, 14, 23, 0.6);
-  --nav-bg-scrolled: rgba(10, 14, 23, 0.78);
+  /* ---- Liquid-glass surface lighting (specular sheen + refractive edge tint) ---- */
+  --glass-sheen-1: rgba(255, 255, 255, 0.1);   /* top-left specular highlight */
+  --glass-sheen-2: rgba(111, 155, 255, 0.14);  /* cool refraction, bottom-right */
+  --glass-sheen-3: rgba(255, 93, 87, 0.08);    /* warm chromatic fringe, top-right */
+  --glass-rim-top: rgba(255, 255, 255, 0.18);  /* top hairline catching light */
+  --glass-rim-bottom: rgba(0, 0, 0, 0.6);      /* bottom hairline, glass thickness */
 
-  --scrim: rgba(0, 0, 0, 0.55);
-  --shadow-card: 0 12px 32px rgba(0, 0, 0, 0.35);
-  --shadow-card-hover: 0 20px 50px rgba(0, 0, 0, 0.5);
+  --nav-bg: rgba(6, 7, 10, 0.55);
+  --nav-bg-scrolled: rgba(6, 7, 10, 0.82);
 
-  --ticket-bg: #171d2e;
+  --scrim: rgba(0, 0, 0, 0.6);
+  --shadow-card: 0 12px 32px rgba(0, 0, 0, 0.45);
+  --shadow-card-hover: 0 20px 54px rgba(0, 0, 0, 0.6);
+
+  --ticket-bg: #14161f;
   --ticket-notch: var(--bg);
 
   --success: #3ddb96;
@@ -123,8 +137,20 @@
   color-scheme: dark;
 }
 
-/* ---- Bangla type override ---- */
+/* ---- Bangla type override ----
+   Kalpurush is a metrically "quieter" face than Noto Sans Bengali at the
+   same pixel size, and Bengali conjuncts/matras need more room to stay
+   legible, so every size step is bumped up alongside the font swap. */
 :root[data-lang="bn"] {
-  --font-display: "Noto Sans Bengali", "Space Grotesk", sans-serif;
-  --font-body: "Noto Sans Bengali", "Inter", sans-serif;
+  --font-display: "Kalpurush", "Noto Sans Bengali", "Space Grotesk", sans-serif;
+  --font-body: "Kalpurush", "Noto Sans Bengali", "Inter", sans-serif;
+
+  --fs-body: 0.95rem;         /* 15.2px, up from 13px */
+  --fs-body-sm: 0.875rem;     /* 14px, up from 12px */
+  --fs-nav: 0.9375rem;        /* 15px, up from 13px */
+  --fs-eyebrow: 0.8125rem;    /* 13px, up from 11px */
+  --fs-h1: clamp(2.5rem, 6.4vw, 4.6rem);
+  --fs-h2: clamp(1.85rem, 4.3vw, 2.9rem);
+  --fs-h3: 1.25rem;           /* 20px, up from 18px */
+  --fs-price: 1.5rem;         /* 24px, up from 22px */
 }
