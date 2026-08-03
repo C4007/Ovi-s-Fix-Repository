@@ -102,7 +102,6 @@ export const translations = {
       back: "Back to Home",
     },
     misc: {
-      langToggleLabel: "বাং",
       themeToggleLight: "Switch to light mode",
       themeToggleDark: "Switch to dark mode",
       menuOpen: "Open menu",
@@ -204,7 +203,6 @@ export const translations = {
       back: "হোমে ফিরে যান",
     },
     misc: {
-      langToggleLabel: "EN",
       themeToggleLight: "লাইট মোডে যান",
       themeToggleDark: "ডার্ক মোডে যান",
       menuOpen: "মেনু খুলুন",

@@ -351,7 +351,7 @@ export const terms = [
 
 // ---- Trust stats strip (hero) ---------------------------------------------
 export const stats = [
-  { value: "18+", label: { en: "services offered", bn: "সার্ভিস অফার করা হয়" } },
+  { value: "18", label: { en: "services offered", bn: "সার্ভিস অফার করা হয়" } },
   { value: "0", label: { en: "cost diagnostic report", bn: "খরচে ডায়াগনস্টিক রিপোর্ট" }, prefixFree: true },
   { value: "7", label: { en: "day service warranty", bn: "দিনের সার্ভিস ওয়ারেন্টি" } },
   { value: "100%", label: { en: "on-site in Dhaka", bn: "অন-সাইট সেবা ঢাকায়" } },

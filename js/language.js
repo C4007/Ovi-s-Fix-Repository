@@ -62,9 +62,8 @@ function applyStaticText(lang) {
 function updateToggleUI(lang) {
   const btn = document.getElementById("lang-toggle");
   if (!btn) return;
-  const label = btn.querySelector("[data-lang-label]");
-  const dict = translations[lang] || translations.en;
-  if (label) label.textContent = dict.misc.langToggleLabel;
+  // Flag visibility is handled by CSS via [data-lang] — just keep the
+  // accessible label in sync.
   btn.setAttribute("aria-label", lang === "en" ? "Switch to Bangla" : "Switch to English");
 }
 
