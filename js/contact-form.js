@@ -38,9 +38,10 @@ export function initContactForm() {
     // Honeypot: real users never fill this hidden field in.
     if (honeypot) return;
 
-    const emailOk = /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
-    if (!name || !emailOk || !message) {
-      showStatus(statusEl, "error", dict.contact.formError);
+    const emailOk = !email || /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
+    const phoneDigits = phone.replace(/\D/g, "").length;
+    if (!name || phoneDigits < 7 || !emailOk || !message) {
+      showStatus(statusEl, "error", dict.contact.formValidation);
       return;
     }
 

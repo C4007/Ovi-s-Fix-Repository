@@ -11,7 +11,7 @@
 // ============================================================================
 
 const TO_EMAIL_DEFAULT = "contact.ovisfix@gmail.com";
-const FROM_EMAIL_DEFAULT = "onboarding@resend.dev";
+const FROM_EMAIL_DEFAULT = "Ovi's Fix Website <onboarding@resend.dev>";
 
 function isValidEmail(email) {
   return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
@@ -48,9 +48,12 @@ export async function onRequestPost(context) {
   const phone = (body.phone || "").toString().trim().slice(0, 40);
   const message = (body.message || "").toString().trim().slice(0, 5000);
 
-  if (!name || !isValidEmail(email) || !message) {
+  const emailOk = !email || isValidEmail(email);
+  const phoneDigits = phone.replace(/\D/g, "").length;
+
+  if (!name || phoneDigits < 7 || !emailOk || !message) {
     return json(
-      { success: false, error: "Please provide a valid name, email, and message." },
+      { success: false, error: "Please provide a valid name, phone number, and message." },
       400
     );
   }
@@ -73,26 +76,28 @@ export async function onRequestPost(context) {
     <div style="font-family:-apple-system,Arial,sans-serif;font-size:14px;color:#111;">
       <h2 style="margin:0 0 12px;">New message from the Ovi's Fix website</h2>
       <p><strong>Name:</strong> ${escapeHtml(name)}</p>
-      <p><strong>Email:</strong> ${escapeHtml(email)}</p>
-      ${phone ? `<p><strong>Phone:</strong> ${escapeHtml(phone)}</p>` : ""}
+      <p><strong>Phone:</strong> ${escapeHtml(phone)}</p>
+      ${email ? `<p><strong>Email:</strong> ${escapeHtml(email)}</p>` : ""}
       <p><strong>Message:</strong></p>
       <p style="white-space:pre-wrap;">${escapeHtml(message)}</p>
     </div>`;
 
   try {
+    const emailPayload = {
+      from: fromEmail,
+      to: [toEmail],
+      subject: `New website inquiry from ${name}`,
+      html,
+    };
+    if (email) emailPayload.reply_to = email;
+
     const resendRes = await fetch("https://api.resend.com/emails", {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
         Authorization: `Bearer ${apiKey}`,
       },
-      body: JSON.stringify({
-        from: fromEmail,
-        to: [toEmail],
-        reply_to: email,
-        subject: `New website inquiry from ${name}`,
-        html,
-      }),
+      body: JSON.stringify(emailPayload),
     });
 
     if (!resendRes.ok) {
