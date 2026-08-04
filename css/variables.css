@@ -25,8 +25,16 @@
 
   --font-display: "Space Grotesk", "Segoe UI", sans-serif;
   --font-body: "Inter", "Segoe UI", sans-serif;
-  --font-mono: "IBM Plex Mono", "Courier New", monospace;
-  --font-bn: "Kalpurush", "Noto Sans Bengali", "Inter", sans-serif;
+  /* Used for every numeral-heavy element: stat values, prices, badges,
+     comparison-table figures. Set to a standard serif per brand request. */
+  --font-mono: "Times New Roman", Times, serif;
+  --font-bn: "Kalpurush Web", "Noto Sans Bengali", "Inter", sans-serif;
+
+  /* Exact brand colors sampled from the Ovi's Fix logo artwork, used for
+     the hero "highlight" line gradient. */
+  --logo-red: #d5171b;
+  --logo-blue: #156ac5;
+  --logo-navy: #0b1d31;
 
   /* ---- Layout ---- */
   --container: 1220px;
@@ -142,15 +150,21 @@
    same pixel size, and Bengali conjuncts/matras need more room to stay
    legible, so every size step is bumped up alongside the font swap. */
 :root[data-lang="bn"] {
-  --font-display: "Kalpurush", "Noto Sans Bengali", "Space Grotesk", sans-serif;
-  --font-body: "Kalpurush", "Noto Sans Bengali", "Inter", sans-serif;
+  --font-display: "Kalpurush Web", "Noto Sans Bengali", "Space Grotesk", sans-serif;
+  --font-body: "Kalpurush Web", "Noto Sans Bengali", "Inter", sans-serif;
 
   --fs-body: 0.95rem;         /* 15.2px, up from 13px */
-  --fs-body-sm: 0.875rem;     /* 14px, up from 12px */
+  --fs-body-sm: 0.9rem;       /* 14.4px — floor for "small" body copy */
   --fs-nav: 0.9375rem;        /* 15px, up from 13px */
-  --fs-eyebrow: 0.8125rem;    /* 13px, up from 11px */
+  --fs-eyebrow: 0.875rem;     /* 14px, up from 11px */
   --fs-h1: clamp(2.5rem, 6.4vw, 4.6rem);
   --fs-h2: clamp(1.85rem, 4.3vw, 2.9rem);
   --fs-h3: 1.25rem;           /* 20px, up from 18px */
   --fs-price: 1.5rem;         /* 24px, up from 22px */
+
+  /* Site-wide floor: nothing in Bangla mode should render smaller than
+     this. Micro-copy (badges, labels, footnotes) is bumped to hit it
+     individually further down in base.css, since Bengali conjuncts and
+     matras lose legibility well before Latin text would at the same size. */
+  --fs-min-bn: 0.875rem; /* 14px */
 }

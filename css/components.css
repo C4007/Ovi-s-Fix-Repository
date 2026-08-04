@@ -413,11 +413,24 @@
   margin-top: 6px;
 }
 
+/* The middle hero line is the "highlight" — the one word visitors should
+   actually remember. It's set a notch larger than its neighbors, in the
+   exact red-to-blue pulled from the logo's wrench, with a soft color-matched
+   glow behind it so it reads as illuminated rather than just recolored. */
 .hero-title .accent {
-  background: linear-gradient(100deg, var(--signal-red) 10%, var(--circuit-blue) 90%);
+  position: relative;
+  display: inline-block;
+  font-size: 1.08em;
+  font-weight: 800;
+  background: linear-gradient(100deg, var(--logo-red) 0%, var(--logo-red) 25%, var(--logo-blue) 75%, var(--logo-blue) 100%);
   -webkit-background-clip: text;
   background-clip: text;
   color: transparent;
+  filter: drop-shadow(0 2px 28px rgba(213, 23, 27, 0.22)) drop-shadow(0 2px 28px rgba(21, 106, 197, 0.22));
+}
+
+:root[data-lang="bn"] .hero-title .accent {
+  font-weight: 400; /* Kalpurush Web has no 800 master — see note above */
 }
 
 .hero-sub {
