@@ -5,45 +5,28 @@
 /* ---------------------------------------------------------------------------
    Glass & acrylic surfaces
    --------------------------------------------------------------------------- */
-/* Liquid glass: three soft radial layers on top of the base tint —
-   a specular highlight top-left (where a light source would catch a
-   curved glass edge), a cool refraction pool bottom-right, and a faint
-   warm fringe top-right that reads as a hint of chromatic split where
-   the "lens" bends light. Inset rim shadows give the panel a hairline
-   of thickness top and bottom, like real glass rather than a flat tint. */
 .glass {
-  background:
-    radial-gradient(130% 140% at 10% -12%, var(--glass-sheen-1), transparent 42%),
-    radial-gradient(60% 55% at 102% 4%, var(--glass-sheen-3), transparent 60%),
-    radial-gradient(120% 120% at 108% 118%, var(--glass-sheen-2), transparent 55%),
-    var(--glass-bg);
-  backdrop-filter: blur(18px) saturate(160%) contrast(1.04);
-  -webkit-backdrop-filter: blur(18px) saturate(160%) contrast(1.04);
+  background: var(--glass-bg);
+  backdrop-filter: blur(18px) saturate(160%);
+  -webkit-backdrop-filter: blur(18px) saturate(160%);
   border: 1px solid var(--glass-border);
-  box-shadow: var(--glass-shadow), inset 0 1px 0 var(--glass-rim-top), inset 0 -1px 0 var(--glass-rim-bottom);
+  box-shadow: var(--glass-shadow);
 }
 
 .glass-strong {
-  background:
-    radial-gradient(130% 140% at 10% -12%, var(--glass-sheen-1), transparent 42%),
-    radial-gradient(60% 55% at 102% 4%, var(--glass-sheen-3), transparent 60%),
-    radial-gradient(120% 120% at 108% 118%, var(--glass-sheen-2), transparent 55%),
-    var(--glass-bg-strong);
-  backdrop-filter: blur(22px) saturate(180%) contrast(1.04);
-  -webkit-backdrop-filter: blur(22px) saturate(180%) contrast(1.04);
+  background: var(--glass-bg-strong);
+  backdrop-filter: blur(22px) saturate(180%);
+  -webkit-backdrop-filter: blur(22px) saturate(180%);
   border: 1px solid var(--glass-border);
-  box-shadow: inset 0 1px 0 var(--glass-rim-top), inset 0 -1px 0 var(--glass-rim-bottom);
 }
 
 /* Acrylic = near-opaque frosted surface, used only where glass would overlap
-   and hurt legibility (mobile nav popover). More body, same family — still
-   gets a faint top rim so it reads as glass, not a flat card. */
+   and hurt legibility (mobile nav popover). More body, same family. */
 .acrylic {
   background: var(--acrylic-bg);
   backdrop-filter: blur(26px) saturate(140%);
   -webkit-backdrop-filter: blur(26px) saturate(140%);
   border: 1px solid var(--border-soft);
-  box-shadow: var(--glass-shadow), inset 0 1px 0 var(--glass-rim-top);
 }
 
 /* ---------------------------------------------------------------------------
@@ -177,22 +160,15 @@
   right: 0;
   z-index: 100;
   height: var(--nav-height);
-  background:
-    radial-gradient(90% 200% at 50% -120%, var(--glass-sheen-1), transparent 55%),
-    radial-gradient(30% 160% at 100% 100%, var(--glass-sheen-2), transparent 60%),
-    var(--nav-bg);
-  backdrop-filter: blur(16px) saturate(170%) contrast(1.04);
-  -webkit-backdrop-filter: blur(16px) saturate(170%) contrast(1.04);
+  background: var(--nav-bg);
+  backdrop-filter: blur(14px) saturate(160%);
+  -webkit-backdrop-filter: blur(14px) saturate(160%);
   border-bottom: 1px solid transparent;
-  box-shadow: inset 0 -1px 0 var(--glass-rim-top);
   transition: background-color var(--t-med) var(--ease-out), border-color var(--t-med) var(--ease-out);
 }
 
 .navbar.scrolled {
-  background:
-    radial-gradient(90% 200% at 50% -120%, var(--glass-sheen-1), transparent 55%),
-    radial-gradient(30% 160% at 100% 100%, var(--glass-sheen-2), transparent 60%),
-    var(--nav-bg-scrolled);
+  background: var(--nav-bg-scrolled);
   border-bottom-color: var(--border-soft);
 }
 
@@ -413,24 +389,11 @@
   margin-top: 6px;
 }
 
-/* The middle hero line is the "highlight" — the one word visitors should
-   actually remember. It's set a notch larger than its neighbors, in the
-   exact red-to-blue pulled from the logo's wrench, with a soft color-matched
-   glow behind it so it reads as illuminated rather than just recolored. */
 .hero-title .accent {
-  position: relative;
-  display: inline-block;
-  font-size: 1.08em;
-  font-weight: 800;
-  background: linear-gradient(100deg, var(--logo-red) 0%, var(--logo-red) 25%, var(--logo-blue) 75%, var(--logo-blue) 100%);
+  background: linear-gradient(100deg, var(--signal-red) 10%, var(--circuit-blue) 90%);
   -webkit-background-clip: text;
   background-clip: text;
   color: transparent;
-  filter: drop-shadow(0 2px 28px rgba(213, 23, 27, 0.22)) drop-shadow(0 2px 28px rgba(21, 106, 197, 0.22));
-}
-
-:root[data-lang="bn"] .hero-title .accent {
-  font-weight: 400; /* Kalpurush Web has no 800 master — see note above */
 }
 
 .hero-sub {
@@ -533,7 +496,7 @@
 
 .hero-badge-label {
   font-family: var(--font-mono);
-  font-size: 10px;
+  font-size: 12px;
   letter-spacing: 0.1em;
   text-transform: uppercase;
   color: var(--signal-red);
@@ -1051,12 +1014,6 @@
   height: 16px;
 }
 
-.contact-info-icon img {
-  width: 18px;
-  height: 18px;
-  object-fit: contain;
-}
-
 .contact-info-text .label {
   font-size: 10.5px;
   text-transform: uppercase;
@@ -1202,4 +1159,22 @@
   font-size: var(--fs-body);
   color: var(--text-body-key);
   line-height: 1.75;
+}
+
+/* ---------------------------------------------------------------------------
+   Bangla script has no letter-casing, and tracked-out letter-spacing breaks
+   conjunct/matra shaping — turn both off for every tracked-uppercase label
+   when Bangla is active (this is what was making red eyebrow/badge text
+   look oddly spaced out).
+   --------------------------------------------------------------------------- */
+:root[data-lang="bn"] .eyebrow,
+:root[data-lang="bn"] .hero-badge-label,
+:root[data-lang="bn"] .comparison-table th,
+:root[data-lang="bn"] .form-label,
+:root[data-lang="bn"] .footer-col h4,
+:root[data-lang="bn"] .contact-info-text .label,
+:root[data-lang="bn"] .loader-text,
+:root[data-lang="bn"] .scroll-indicator {
+  letter-spacing: 0;
+  text-transform: none;
 }

@@ -2,25 +2,17 @@
    Ovi's Fix — base styles: reset, typography, utilities
    ========================================================================== */
 
-/* ---- Kalpurush (self-hosted) — used only in Bangla mode, see the
-   [data-lang="bn"] override below and --font-bn / --font-display /
-   --font-body in variables.css.
-   Named "Kalpurush Web" (not "Kalpurush") on purpose: many Bangladeshi
-   Windows PCs already have a system copy of Kalpurush installed (usually
-   bundled with Avro Keyboard), often an older/different build of the font.
-   Re-using the bare name risks the OS or browser silently substituting
-   that local copy instead of this file, which is a common real-world
-   cause of a font looking fine in testing but corrupted/mis-shapen on a
-   visitor's own machine. A unique family name removes that ambiguity
-   entirely. Declared at its real single weight (400) — Kalpurush has no
-   bold master, so headings are set back to 400 in Bangla mode below to
-   avoid the browser synthesizing a fake-bold that can distort conjuncts. */
+/* Kalpurush — self-hosted (SIL Open Font License, see css/fonts/kalpurush-OFL.txt).
+   Used for Bangla body/heading text; see variables.css [data-lang="bn"]. */
 @font-face {
-  font-family: "Kalpurush Web";
-  src: url("../fonts/Kalpurush.ttf") format("truetype");
-  font-weight: 400;
+  font-family: "Kalpurush";
   font-style: normal;
+  font-weight: 400 700;
   font-display: swap;
+  src: url("fonts/kalpurush.woff2") format("woff2"),
+       url("fonts/kalpurush.woff") format("woff");
+  unicode-range: U+0951-0952, U+0964-0965, U+0980-09FE, U+1CD0, U+1CD2, U+1CD5-1CD6,
+    U+1CD8, U+1CE1, U+1CEA, U+1CED, U+1CF2, U+1CF5-1CF7, U+200C-200D, U+20B9, U+25CC, U+A8F1;
 }
 
 *,
@@ -207,109 +199,4 @@ textarea {
     transition-duration: 0.001ms !important;
     scroll-behavior: auto !important;
   }
-}
-
-/* ---------------------------------------------------------------------------
-   Bangla script fixes
-   Letter-spacing ("tracking") is a Latin-typography trick — applied to
-   Bengali it drives every conjunct and matra apart and turns single spaces
-   into visible gaps, which is exactly the "hideous" spacing effect. Bengali
-   also has no concept of uppercase, so text-transform: uppercase is a no-op
-   we can safely leave alone. This resets tracking site-wide in Bangla mode;
-   specificity (0,2,0) beats every single-class rule that sets tracking, so
-   it wins regardless of stylesheet order.
-   --------------------------------------------------------------------------- */
-:root[data-lang="bn"] * {
-  letter-spacing: normal;
-}
-
-:root[data-lang="bn"] body {
-  line-height: 1.85; /* extra breathing room for matras/conjuncts */
-}
-
-:root[data-lang="bn"] p,
-:root[data-lang="bn"] .service-card-desc,
-:root[data-lang="bn"] .faq-answer p {
-  line-height: 1.85;
-}
-
-/* Kalpurush Web ships one weight (regular). Requesting 600/700 on it would
-   make the browser fake a bold by algorithmically thickening strokes,
-   which is a well-known way to distort Bengali conjuncts and matra
-   attachment — so headings go back to their natural weight in Bangla mode. */
-:root[data-lang="bn"] h1,
-:root[data-lang="bn"] h2,
-:root[data-lang="bn"] h3,
-:root[data-lang="bn"] h4,
-:root[data-lang="bn"] .btn,
-:root[data-lang="bn"] .hero-stat-value,
-:root[data-lang="bn"] .save-badge {
-  font-weight: 400;
-}
-
-/* ---------------------------------------------------------------------------
-   Bangla minimum-legibility pass
-   A handful of UI labels (badges, table headers, footer links, form
-   labels) were hardcoded to small Latin micro-copy sizes (10–13px). Those
-   sizes were never meant for Bengali script — every one is bumped to at
-   least --fs-min-bn (14px) here, addressed by the same selectors used in
-   css/components.css / css/animations.css.
-   --------------------------------------------------------------------------- */
-:root[data-lang="bn"] .mobile-menu-links a {
-  font-size: 1rem;
-}
-:root[data-lang="bn"] .hero-stat-value {
-  font-size: 1.5rem;
-}
-:root[data-lang="bn"] .hero-stat-label {
-  font-size: var(--fs-min-bn);
-  max-width: none;
-}
-:root[data-lang="bn"] .hero-status-chip {
-  font-size: var(--fs-min-bn);
-}
-:root[data-lang="bn"] .hero-badge-label {
-  font-size: var(--fs-min-bn);
-}
-:root[data-lang="bn"] .scroll-indicator {
-  font-size: var(--fs-min-bn);
-}
-:root[data-lang="bn"] .price-ticket .currency {
-  font-size: 0.95rem;
-}
-:root[data-lang="bn"] .price-ticket .unit {
-  font-size: var(--fs-min-bn);
-}
-:root[data-lang="bn"] .comparison-table th {
-  font-size: var(--fs-min-bn);
-}
-:root[data-lang="bn"] .save-badge {
-  font-size: var(--fs-min-bn);
-}
-:root[data-lang="bn"] .comparison-footnote {
-  font-size: var(--fs-min-bn);
-}
-:root[data-lang="bn"] .form-label {
-  font-size: var(--fs-min-bn);
-}
-:root[data-lang="bn"] .form-status {
-  font-size: var(--fs-min-bn);
-}
-:root[data-lang="bn"] .contact-info-text .label {
-  font-size: var(--fs-min-bn);
-}
-:root[data-lang="bn"] .contact-info-text .value {
-  font-size: 1rem;
-}
-:root[data-lang="bn"] .social-pill {
-  font-size: var(--fs-min-bn);
-}
-:root[data-lang="bn"] .footer-col h4 {
-  font-size: var(--fs-min-bn);
-}
-:root[data-lang="bn"] .footer-col a {
-  font-size: 1rem;
-}
-:root[data-lang="bn"] .footer-bottom {
-  font-size: var(--fs-min-bn);
 }

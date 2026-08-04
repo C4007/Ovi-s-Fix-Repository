@@ -86,7 +86,6 @@ export const translations = {
       addressLabel: "Address",
       emailLabel: "Email",
       phoneLabel: "Phone / WhatsApp",
-      bkashLabel: "bKash (Personal)",
       socialTitle: "Follow Us",
     },
     footer: {
@@ -188,7 +187,6 @@ export const translations = {
       addressLabel: "ঠিকানা",
       emailLabel: "ইমেইল",
       phoneLabel: "ফোন / WhatsApp",
-      bkashLabel: "বিকাশ (পার্সোনাল)",
       socialTitle: "আমাদের ফলো করুন",
     },
     footer: {
