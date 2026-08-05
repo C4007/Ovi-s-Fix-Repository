@@ -9,7 +9,7 @@ import { services, comparison, whyUs, faq, terms, stats } from "./data.js";
 import { translations } from "./translations.js";
 import { icon } from "./icons.js";
 import { getCurrentLanguage } from "./language.js";
-import { observeReveal } from "./animations.js";
+import { observeReveal, prefersReducedMotion } from "./animations.js";
 
 function t() {
   const lang = getCurrentLanguage();
@@ -185,22 +185,81 @@ export function renderTerms() {
 }
 
 /* ---------------------------------------------------------------------------
-   Hero stats strip
+   Hero stats strip — icon + big count-up number + label
    --------------------------------------------------------------------------- */
+let statsHasPlayedOnce = false;
+
+function animateCount(el, target, suffix, duration) {
+  if (prefersReducedMotion) {
+    el.textContent = target + suffix;
+    return;
+  }
+  const start = performance.now();
+  function tick(now) {
+    const progress = Math.min((now - start) / duration, 1);
+    const eased = 1 - Math.pow(1 - progress, 3); // ease-out cubic
+    el.textContent = Math.round(eased * target) + suffix;
+    if (progress < 1) requestAnimationFrame(tick);
+    else el.textContent = target + suffix;
+  }
+  requestAnimationFrame(tick);
+}
+
+function playStatsAnimation() {
+  const container = document.getElementById("hero-stats");
+  if (!container) return;
+
+  container.querySelectorAll(".hero-stat-value[data-count-target]").forEach((el, i) => {
+    const target = parseInt(el.getAttribute("data-count-target"), 10);
+    const suffix = el.getAttribute("data-count-suffix") || "";
+    el.textContent = "0" + suffix;
+    setTimeout(() => animateCount(el, target, suffix, 1100), i * 90);
+  });
+
+  container.querySelectorAll(".hero-stat-value.is-free").forEach((el, i) => {
+    el.classList.remove("pop-in");
+    // force reflow so the animation can replay on language toggle
+    void el.offsetWidth;
+    el.classList.add("pop-in");
+  });
+}
+
+function scheduleStatsAnimation() {
+  if (statsHasPlayedOnce || !document.getElementById("loading-screen")) {
+    playStatsAnimation();
+    statsHasPlayedOnce = true;
+    return;
+  }
+  document.addEventListener(
+    "ovisfix:loaded",
+    () => {
+      statsHasPlayedOnce = true;
+      playStatsAnimation();
+    },
+    { once: true }
+  );
+}
+
 export function renderStats() {
   const container = document.getElementById("hero-stats");
   if (!container) return;
   const { lang, dict } = t();
 
   container.innerHTML = stats
-    .map(
-      (s) => `
-      <div>
-        <div class="hero-stat-value">${s.prefixFree ? dict.services.priceFree : s.value}</div>
+    .map((s) => {
+      const valueMarkup = s.free
+        ? `<div class="hero-stat-value is-free">${dict.services.priceFree}</div>`
+        : `<div class="hero-stat-value" data-count-target="${s.count}" data-count-suffix="${s.suffix || ""}">0${s.suffix || ""}</div>`;
+      return `
+      <div class="hero-stat-card">
+        <div class="hero-stat-icon">${icon(s.icon)}</div>
+        ${valueMarkup}
         <div class="hero-stat-label">${s.label[lang]}</div>
-      </div>`
-    )
+      </div>`;
+    })
     .join("");
+
+  scheduleStatsAnimation();
 }
 
 /* ---------------------------------------------------------------------------

@@ -4,7 +4,7 @@
    and the navbar's scrolled-state toggle.
    ========================================================================== */
 
-const prefersReducedMotion = window.matchMedia && window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+export const prefersReducedMotion = window.matchMedia && window.matchMedia("(prefers-reduced-motion: reduce)").matches;
 
 let revealObserver = null;
 
@@ -101,6 +101,7 @@ export function initLoadingScreen() {
   Promise.race([Promise.all([minTime, windowLoaded]), safety]).then(() => {
     screen.classList.add("is-hidden");
     document.body.classList.remove("no-scroll");
+    document.dispatchEvent(new CustomEvent("ovisfix:loaded"));
     setTimeout(() => screen.remove(), 700);
   });
 }
