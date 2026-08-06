@@ -5,11 +5,36 @@
    "ovisfix:languagechange" event, so containers are safe to fully rebuild.
    ========================================================================== */
 
-import { services, comparison, whyUs, faq, terms, stats } from "./data.js";
+import { defaultServices, comparison, whyUs, faq, terms, stats, configurator } from "./data.js";
 import { translations } from "./translations.js";
 import { icon } from "./icons.js";
 import { getCurrentLanguage } from "./language.js";
 import { observeReveal, prefersReducedMotion } from "./animations.js";
+
+/* ---------------------------------------------------------------------------
+   Services data: fetched live from /api/services (admin-editable, backed by
+   Upstash) with a fallback to the bundled defaultServices from data.js.
+   Cached after the first successful load so re-renders (e.g. on language
+   toggle) don't re-fetch every time.
+   --------------------------------------------------------------------------- */
+let cachedServices = null;
+
+async function loadServices() {
+  if (cachedServices) return cachedServices;
+  try {
+    const res = await fetch("/api/services", { cache: "no-store" });
+    if (!res.ok) throw new Error("bad status");
+    const data = await res.json();
+    if (Array.isArray(data.services) && data.services.length > 0) {
+      cachedServices = data.services;
+      return cachedServices;
+    }
+    throw new Error("empty payload");
+  } catch (err) {
+    cachedServices = defaultServices;
+    return cachedServices;
+  }
+}
 
 function t() {
   const lang = getCurrentLanguage();
@@ -47,12 +72,12 @@ function serviceCard(service, lang, dict, index) {
     </article>`;
 }
 
-export function renderServices() {
+export function renderServices(svc) {
   const container = document.getElementById("services-grid");
   if (!container) return;
   const { lang, dict } = t();
 
-  container.innerHTML = services.map((s, i) => serviceCard(s, lang, dict, i)).join("");
+  container.innerHTML = svc.map((s, i) => serviceCard(s, lang, dict, i)).join("");
 
   container.querySelectorAll(".service-card").forEach((card) => {
     const btn = card.querySelector(".service-card-cta");
@@ -78,14 +103,14 @@ export function renderServices() {
 /* ---------------------------------------------------------------------------
    Comparison table
    --------------------------------------------------------------------------- */
-export function renderComparison() {
+export function renderComparison(svc) {
   const body = document.getElementById("comparison-body");
   if (!body) return;
   const { lang, dict } = t();
 
   body.innerHTML = comparison
     .map((row, i) => {
-      const service = services.find((s) => s.id === row.id);
+      const service = svc.find((s) => s.id === row.id);
       if (!service) return "";
       const savePct = Math.round(((row.market - service.price) / row.market) * 100);
       return `
@@ -159,6 +184,38 @@ export function renderFAQ() {
       btn.setAttribute("aria-expanded", isOpen ? "false" : "true");
     });
   });
+
+  observeReveal(container.querySelectorAll(".reveal"));
+}
+
+/* ---------------------------------------------------------------------------
+   PC Configurator preview (Expert Mode / Pre-configured Mode)
+   --------------------------------------------------------------------------- */
+export function renderConfigurator() {
+  const container = document.getElementById("configurator-grid");
+  if (!container) return;
+  const { lang, dict } = t();
+
+  container.innerHTML = configurator.modes
+    .map(
+      (mode, i) => `
+      <article class="mode-card glass reveal" style="--reveal-delay:${staggerDelay(i)}ms">
+        <div class="mode-card-image">
+          <img src="images/${mode.image}" alt="${mode.title.en}" loading="lazy">
+          <span class="mode-badge">${dict.configurator.comingSoonBadge}</span>
+        </div>
+        <div class="mode-card-body">
+          <h3>${mode.title[lang]}</h3>
+          <p class="mode-intro">${mode.intro[lang]}</p>
+          <div class="mode-steps-label">${dict.configurator.howItWorks}</div>
+          <ul class="mode-steps">
+            ${mode.steps.map((s) => `<li>${icon("check")}<span>${s[lang]}</span></li>`).join("")}
+          </ul>
+          <p class="mode-closing">${mode.closing[lang]}</p>
+        </div>
+      </article>`
+    )
+    .join("");
 
   observeReveal(container.querySelectorAll(".reveal"));
 }
@@ -265,10 +322,12 @@ export function renderStats() {
 /* ---------------------------------------------------------------------------
    Render everything present on the current page
    --------------------------------------------------------------------------- */
-export function renderAll() {
+export async function renderAll() {
+  const svc = await loadServices();
   renderStats();
-  renderServices();
-  renderComparison();
+  renderServices(svc);
+  renderConfigurator();
+  renderComparison(svc);
   renderWhyUs();
   renderFAQ();
   renderTerms();

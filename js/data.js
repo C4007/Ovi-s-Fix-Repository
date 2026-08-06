@@ -5,8 +5,13 @@
    ========================================================================== */
 
 // ---- Service catalogue -----------------------------------------------------
+// This is the FALLBACK dataset — what the site shows if the admin panel's
+// live data (fetched from /api/services, backed by Upstash) isn't reachable
+// or hasn't been set up yet. See js/render.js's loadServices(). Edit this
+// array to change the defaults; edit live data via /admin.html once Upstash
+// is configured (see README.md).
 // `unit` is what prints after the price, e.g. "500 / per visit"
-export const services = [
+export const defaultServices = [
   {
     id: "diagnostic-report",
     icon: "report",
@@ -348,6 +353,80 @@ export const terms = [
     bn: "অন্যথায় সম্মত না হলে, সার্ভিস সম্পন্ন হওয়ার সাথে সাথেই পেমেন্ট পরিশোধযোগ্য।",
   },
 ];
+
+// ---- PC Configurator preview (coming soon) ---------------------------------
+export const configurator = {
+  modes: [
+    {
+      id: "expert",
+      image: "pc-parts-explode.jpg",
+      title: {
+        en: "Expert Mode: Full Creative Control",
+        bn: "এক্সপার্ট মোড: সম্পূর্ণ সৃজনশীল নিয়ন্ত্রণ",
+      },
+      intro: {
+        en: "If you are confident with PC hardware and want complete control over your setup, Expert Mode is made for you. This option is ideal for gamers, streamers and creators who know exactly what they need and want to build a system that matches their performance goals and personal style. With Expert Mode, you are not just selecting a PC — you are designing a high performance machine from the ground up.",
+        bn: "আপনি যদি পিসি হার্ডওয়্যারে আত্মবিশ্বাসী হন এবং নিজের সেটআপের উপর সম্পূর্ণ নিয়ন্ত্রণ চান, তাহলে এক্সপার্ট মোড আপনার জন্যই তৈরি। এই অপশনটি গেমার, স্ট্রিমার ও ক্রিয়েটরদের জন্য আদর্শ, যারা ঠিক জানেন তাদের কী প্রয়োজন এবং নিজের পারফরম্যান্স লক্ষ্য ও ব্যক্তিগত স্টাইলের সাথে মিলিয়ে একটি সিস্টেম তৈরি করতে চান। এক্সপার্ট মোডে আপনি শুধু একটি পিসি বেছে নিচ্ছেন না — আপনি শুরু থেকে একটি হাই-পারফরম্যান্স মেশিন ডিজাইন করছেন।",
+      },
+      steps: [
+        {
+          en: "Start from scratch with a blank canvas.",
+          bn: "একদম শূন্য থেকে শুরু করুন, ফাঁকা ক্যানভাস দিয়ে।",
+        },
+        {
+          en: "Choose every part yourself: case, CPU, GPU, storage, cooling, memory, and more.",
+          bn: "প্রতিটি পার্টস নিজে বেছে নিন: কেসিং, CPU, GPU, স্টোরেজ, কুলিং, মেমরি এবং আরও অনেক কিছু।",
+        },
+        {
+          en: "Watch your build take shape in real time with a live summary.",
+          bn: "লাইভ সামারির মাধ্যমে রিয়েল-টাইমে আপনার বিল্ড তৈরি হতে দেখুন।",
+        },
+        {
+          en: "Built-in compatibility checks keep everything stress-free and performance-ready.",
+          bn: "বিল্ট-ইন কম্প্যাটিবিলিটি চেক সবকিছু ঝামেলাহীন ও পারফরম্যান্সের জন্য প্রস্তুত রাখে।",
+        },
+      ],
+      closing: {
+        en: "Whether you want an ultra-responsive battle station for dropping into Warzone or a powerhouse for Microsoft's Flight Simulator, the configurator puts you fully in control.",
+        bn: "Warzone-এ নামার জন্য একটি আলট্রা-রেসপন্সিভ ব্যাটল স্টেশন হোক, বা Microsoft-এর Flight Simulator-এর জন্য একটি পাওয়ারহাউস — কনফিগারেটর আপনাকে সম্পূর্ণ নিয়ন্ত্রণে রাখবে।",
+      },
+    },
+    {
+      id: "preconfigured",
+      image: "gaming-pc-configurator.jpg",
+      title: {
+        en: "Pre-configured Mode: Expertly Curated Starting Points",
+        bn: "প্রি-কনফিগার্ড মোড: বিশেষজ্ঞ-নির্বাচিত শুরুর পয়েন্ট",
+      },
+      intro: {
+        en: "If you are new to PC building or simply want a quick and reliable way to get started, Pre-configured Mode is the ideal choice. This mode is designed to guide you through the process with ease, while still giving you the freedom to personalise your setup. With Pre-configured Mode, you begin with a professionally curated base system that is already optimised for performance and compatibility. These starting builds are inspired by our most popular configurations and cover a wide range of gaming styles, budgets and technical needs.",
+        bn: "আপনি যদি পিসি বিল্ডিংয়ে নতুন হন বা শুরু করার জন্য একটি দ্রুত ও নির্ভরযোগ্য উপায় চান, তাহলে প্রি-কনফিগার্ড মোড আদর্শ পছন্দ। এই মোডটি আপনাকে সহজে পুরো প্রক্রিয়ার মধ্য দিয়ে গাইড করার জন্য তৈরি, একই সাথে নিজের সেটআপ নিজের মতো করে সাজানোর স্বাধীনতাও দেয়। প্রি-কনফিগার্ড মোডে আপনি শুরু করবেন একটি পেশাদারভাবে নির্বাচিত বেস সিস্টেম দিয়ে, যা ইতিমধ্যেই পারফরম্যান্স ও কম্প্যাটিবিলিটির জন্য অপ্টিমাইজড। এই শুরুর বিল্ডগুলো আমাদের সবচেয়ে জনপ্রিয় কনফিগারেশন থেকে অনুপ্রাণিত এবং বিভিন্ন গেমিং স্টাইল, বাজেট ও টেকনিক্যাল প্রয়োজন কভার করে।",
+      },
+      steps: [
+        {
+          en: "Pre-assembled base systems tailored to different gaming experiences and budgets.",
+          bn: "বিভিন্ন গেমিং অভিজ্ঞতা ও বাজেট অনুযায়ী তৈরি প্রি-অ্যাসেম্বলড বেস সিস্টেম।",
+        },
+        {
+          en: "These builds are inspired by our most popular systems, from entry-level rigs to NVIDIA RTX 50 Series builds.",
+          bn: "এই বিল্ডগুলো আমাদের সবচেয়ে জনপ্রিয় সিস্টেম থেকে অনুপ্রাণিত, এন্ট্রি-লেভেল রিগ থেকে শুরু করে NVIDIA RTX 50 সিরিজ বিল্ড পর্যন্ত।",
+        },
+        {
+          en: "Clear explanations that remove technical jargon, so you understand what you're choosing and why.",
+          bn: "স্পষ্ট ব্যাখ্যা যা টেকনিক্যাল জার্গন দূর করে, যাতে আপনি বুঝতে পারেন কী বেছে নিচ্ছেন এবং কেন।",
+        },
+        {
+          en: "Optimised compatibility, so you don't need to worry about bottlenecks or mismatched hardware.",
+          bn: "অপ্টিমাইজড কম্প্যাটিবিলিটি, তাই বটলনেক বা অমিল হার্ডওয়্যার নিয়ে চিন্তা করতে হবে না।",
+        },
+      ],
+      closing: {
+        en: "No matter if you are building your first gaming PC or upgrading from a console, Pre-configured Mode makes the process smooth and stress free. You get a strong foundation to build on, with the flexibility to make it your own.",
+        bn: "আপনি প্রথমবার গেমিং পিসি বানাচ্ছেন হোক বা কনসোল থেকে আপগ্রেড করছেন — প্রি-কনফিগার্ড মোড পুরো প্রক্রিয়াটি সহজ ও ঝামেলাহীন করে তোলে। আপনি পাবেন একটি শক্ত ভিত্তি, যার উপর নিজের মতো করে গড়ে তোলার স্বাধীনতা থাকবে।",
+      },
+    },
+  ],
+};
 
 // ---- Trust stats strip (hero) ---------------------------------------------
 export const stats = [

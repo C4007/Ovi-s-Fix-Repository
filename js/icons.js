@@ -27,6 +27,7 @@ const paths = {
   plus: '<path d="M12 5v14M5 12h14"/>',
   arrow: '<path d="M7 17L17 7M7 7h10v10"/>',
   send: '<path d="M21.5 2.5L10.8 13.2M21.5 2.5l-6.8 19-4-9-9-4z"/>',
+  check: '<circle cx="12" cy="12" r="9.3"/><path d="M8 12.4l2.6 2.6 5.4-6"/>',
 };
 
 export function icon(name, extraClass) {

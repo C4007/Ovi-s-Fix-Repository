@@ -10,7 +10,7 @@
 // ============================================================================
 
 const TO_EMAIL_DEFAULT = "contact.ovisfix@gmail.com";
-const FROM_EMAIL_DEFAULT = "onboarding@resend.dev";
+const FROM_EMAIL_DEFAULT = "Ovi's Fix Website <onboarding@resend.dev>";
 
 function isValidEmail(email) {
   return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
@@ -25,7 +25,7 @@ function escapeHtml(str) {
     .replace(/'/g, "&#39;");
 }
 
-module.exports = async (req, res) => {
+export default async function handler(req, res) {
   if (req.method !== "POST") {
     res.setHeader("Allow", "POST");
     return res.status(405).json({ success: false, error: "Method not allowed" });
@@ -112,4 +112,4 @@ module.exports = async (req, res) => {
       error: "Something went wrong. Please try again or contact us on WhatsApp.",
     });
   }
-};
+}

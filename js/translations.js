@@ -60,6 +60,14 @@ export const translations = {
       title: "Built on trust, not upsells",
       subtitle: "Five reasons Dhaka households keep coming back to Ovi's Fix.",
     },
+    configurator: {
+      eyebrow: "Coming Soon",
+      title: "Design Your Perfect Build",
+      subtitle: "A PC configurator built for Dhaka — two ways to build, both coming to Ovi's Fix soon.",
+      comingSoonBadge: "Coming Soon",
+      howItWorks: "How It Works",
+      bigStatement: "Pre-Configured Builds are coming soon",
+    },
     faq: {
       eyebrow: "Questions",
       title: "Frequently asked questions",
@@ -160,6 +168,14 @@ export const translations = {
       eyebrow: "পার্থক্য",
       title: "বিশ্বাসের উপর গড়া, অতিরিক্ত বিক্রির উপর নয়",
       subtitle: "পাঁচটি কারণ, যার জন্য ঢাকার পরিবারগুলো বারবার Ovi's Fix-এ ফিরে আসে।",
+    },
+    configurator: {
+      eyebrow: "শীঘ্রই আসছে",
+      title: "আপনার পারফেক্ট বিল্ড ডিজাইন করুন",
+      subtitle: "ঢাকার জন্য তৈরি একটি পিসি কনফিগারেটর — বিল্ড করার দুটি উপায়, দুটোই শীঘ্রই আসছে Ovi's Fix-এ।",
+      comingSoonBadge: "শীঘ্রই আসছে",
+      howItWorks: "যেভাবে কাজ করবে",
+      bigStatement: "প্রি-কনফিগার্ড বিল্ড শীঘ্রই আসছে",
     },
     faq: {
       eyebrow: "প্রশ্ন",

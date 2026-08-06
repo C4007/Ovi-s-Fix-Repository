@@ -18,12 +18,12 @@ function setCopyrightYear() {
   if (el) el.textContent = new Date().getFullYear();
 }
 
-function init() {
+async function init() {
   setCopyrightYear();
   initLoadingScreen();
   initTheme();
   initLanguage(); // applies static data-i18n text for the stored/default language
-  renderAll(); // builds services, comparison, why-us, FAQ, terms (whichever exist on this page)
+  await renderAll(); // builds services (fetched live, falls back to bundled defaults), comparison, why-us, FAQ, terms
   initMobileMenu();
   initNavbarScroll();
   initMouseParallax();
@@ -34,8 +34,8 @@ function init() {
   observeReveal(document.querySelectorAll(".reveal, .reveal-scale"));
 
   // Language toggle re-renders the dynamic sections in the new language.
-  document.addEventListener("ovisfix:languagechange", () => {
-    renderAll();
+  document.addEventListener("ovisfix:languagechange", async () => {
+    await renderAll();
     observeReveal(document.querySelectorAll(".reveal, .reveal-scale"));
   });
 }
