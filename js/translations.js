@@ -29,10 +29,7 @@ export const translations = {
         "From virus removal to full custom builds — honest, affordable computer service delivered to your doorstep in Keraniganj and across Dhaka.",
       ctaPrimary: "Book a Service",
       ctaSecondary: "See Pricing",
-      badgeLabel: "Featured Service",
-      badgeService: "Custom PC Build",
       scroll: "Scroll",
-      statusActive: "Available Today",
     },
     services: {
       eyebrow: "Service Menu",
@@ -141,10 +138,7 @@ export const translations = {
         "ভাইরাস অপসারণ থেকে শুরু করে সম্পূর্ণ কাস্টম বিল্ড পর্যন্ত — কেরাণীগঞ্জ ও ঢাকা জুড়ে সততার সাথে সাশ্রয়ী মূল্যে কম্পিউটার সার্ভিস, আপনার দরজায়।",
       ctaPrimary: "সার্ভিস বুক করুন",
       ctaSecondary: "মূল্য দেখুন",
-      badgeLabel: "ফিচার্ড সার্ভিস",
-      badgeService: "কাস্টম পিসি বিল্ড",
       scroll: "স্ক্রল করুন",
-      statusActive: "আজই সেবা পাওয়া যাচ্ছে",
     },
     services: {
       eyebrow: "সার্ভিস মেনু",

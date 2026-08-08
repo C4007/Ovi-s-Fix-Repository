@@ -9,6 +9,7 @@ import { initTheme } from "./theme.js";
 import { initLoadingScreen } from "./animations.js";
 
 let currentServices = [];
+let currentTicker = [];
 
 function $(id) {
   return document.getElementById(id);
@@ -61,6 +62,126 @@ function showDashboardView() {
   $("admin-login-view").style.display = "none";
   $("admin-dashboard-view").style.display = "";
   $("admin-logout-btn").style.display = "";
+}
+
+/* ---------------------------------------------------------------------------
+   Hero ticker lines (simpler editor: just en/bn text + reordering)
+   --------------------------------------------------------------------------- */
+function tickerLineMarkup(line, index, total) {
+  return `
+    <div class="admin-service-card glass" data-index="${index}">
+      <div class="admin-service-summary">
+        <div class="admin-service-summary-info">
+          <strong class="admin-service-summary-title">${escapeHtml(line.en || "(empty line)")}</strong>
+        </div>
+        <div class="admin-service-summary-actions">
+          <button type="button" class="btn-sm ticker-move-up" ${index === 0 ? "disabled" : ""} aria-label="Move up">&uarr;</button>
+          <button type="button" class="btn-sm ticker-move-down" ${index === total - 1 ? "disabled" : ""} aria-label="Move down">&darr;</button>
+          <button type="button" class="btn-sm danger ticker-delete-btn">Delete</button>
+        </div>
+      </div>
+      <div class="admin-service-form">
+        <div class="admin-form-grid">
+          <div class="form-group full-width">
+            <label class="form-label">English</label>
+            <input type="text" class="form-input ticker-field" data-field="en" value="${escapeHtml(line.en || "")}">
+          </div>
+          <div class="form-group full-width">
+            <label class="form-label">Bangla</label>
+            <input type="text" class="form-input ticker-field" data-field="bn" value="${escapeHtml(line.bn || "")}">
+          </div>
+        </div>
+      </div>
+    </div>`;
+}
+
+function renderTickerList() {
+  const container = $("ticker-lines-list");
+  if (!currentTicker.length) {
+    container.innerHTML = '<div class="admin-empty-state glass">No ticker lines yet — click "+ Add Line" to create one.</div>';
+    return;
+  }
+  container.innerHTML = currentTicker.map((line, i) => tickerLineMarkup(line, i, currentTicker.length)).join("");
+}
+
+function initTickerListEvents() {
+  const container = $("ticker-lines-list");
+
+  container.addEventListener("click", (e) => {
+    const card = e.target.closest(".admin-service-card");
+    if (!card) return;
+    const index = Number(card.dataset.index);
+
+    if (e.target.closest(".ticker-delete-btn")) {
+      currentTicker.splice(index, 1);
+      renderTickerList();
+    }
+    if (e.target.closest(".ticker-move-up") && index > 0) {
+      [currentTicker[index - 1], currentTicker[index]] = [currentTicker[index], currentTicker[index - 1]];
+      renderTickerList();
+    }
+    if (e.target.closest(".ticker-move-down") && index < currentTicker.length - 1) {
+      [currentTicker[index + 1], currentTicker[index]] = [currentTicker[index], currentTicker[index + 1]];
+      renderTickerList();
+    }
+  });
+
+  container.addEventListener("input", (e) => {
+    const field = e.target.dataset.field;
+    if (!field || !e.target.classList.contains("ticker-field")) return;
+    const card = e.target.closest(".admin-service-card");
+    const index = Number(card.dataset.index);
+    currentTicker[index][field] = e.target.value;
+
+    if (field === "en") {
+      card.querySelector(".admin-service-summary-title").textContent = e.target.value || "(empty line)";
+    }
+  });
+}
+
+function handleAddTickerLine() {
+  currentTicker.push({ en: "", bn: "" });
+  renderTickerList();
+}
+
+async function handleSaveTicker() {
+  const statusEl = $("ticker-save-status");
+  const saveBtn = $("ticker-save-btn");
+  clearStatus(statusEl);
+
+  saveBtn.disabled = true;
+  const originalLabel = saveBtn.textContent;
+  saveBtn.textContent = "Saving...";
+
+  try {
+    const res = await fetch("/api/admin/ticker", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ lines: currentTicker }),
+    });
+    const data = await res.json();
+    if (!res.ok || !data.success) {
+      showStatus(statusEl, "error", data.error || "Could not save the ticker.");
+      return;
+    }
+    showStatus(statusEl, "success", "Saved! The homepage ticker will show this on next load.");
+  } catch (err) {
+    showStatus(statusEl, "error", "Network error — could not reach the server.");
+  } finally {
+    saveBtn.disabled = false;
+    saveBtn.textContent = originalLabel;
+  }
+}
+
+async function loadTickerIntoDashboard() {
+  try {
+    const res = await fetch("/api/ticker", { cache: "no-store" });
+    const data = await res.json();
+    currentTicker = Array.isArray(data.lines) ? data.lines : [];
+  } catch (err) {
+    currentTicker = [];
+  }
+  renderTickerList();
 }
 
 /* ---------------------------------------------------------------------------
@@ -273,6 +394,10 @@ async function loadServicesIntoDashboard() {
   renderServicesList();
 }
 
+async function loadDashboardData() {
+  await Promise.all([loadServicesIntoDashboard(), loadTickerIntoDashboard()]);
+}
+
 async function handleLoginSubmit(e) {
   e.preventDefault();
   const statusEl = $("admin-login-status");
@@ -297,7 +422,7 @@ async function handleLoginSubmit(e) {
     }
     $("admin-password").value = "";
     showDashboardView();
-    await loadServicesIntoDashboard();
+    await loadDashboardData();
   } catch (err) {
     showStatus(statusEl, "error", "Network error — could not reach the server.");
   } finally {
@@ -322,16 +447,19 @@ async function init() {
   initLoadingScreen();
   initTheme();
   initServicesListEvents();
+  initTickerListEvents();
 
   $("admin-login-form").addEventListener("submit", handleLoginSubmit);
   $("admin-logout-btn").addEventListener("click", handleLogout);
   $("admin-add-btn").addEventListener("click", handleAddService);
   $("admin-save-btn").addEventListener("click", handleSave);
+  $("ticker-add-btn").addEventListener("click", handleAddTickerLine);
+  $("ticker-save-btn").addEventListener("click", handleSaveTicker);
 
   const authenticated = await checkAuth();
   if (authenticated) {
     showDashboardView();
-    await loadServicesIntoDashboard();
+    await loadDashboardData();
   } else {
     showLoginView();
   }

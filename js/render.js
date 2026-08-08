@@ -5,7 +5,7 @@
    "ovisfix:languagechange" event, so containers are safe to fully rebuild.
    ========================================================================== */
 
-import { defaultServices, comparison, whyUs, faq, terms, stats, configurator } from "./data.js";
+import { defaultServices, defaultTicker, comparison, whyUs, faq, terms, stats, configurator } from "./data.js";
 import { translations } from "./translations.js";
 import { icon } from "./icons.js";
 import { getCurrentLanguage } from "./language.js";
@@ -200,7 +200,7 @@ export function renderConfigurator() {
     .map(
       (mode, i) => `
       <article class="mode-card glass reveal" style="--reveal-delay:${staggerDelay(i)}ms">
-        <div class="mode-card-image">
+        <div class="mode-card-image" data-mode="${mode.id}">
           <img src="images/${mode.image}" alt="${mode.title.en}" loading="lazy">
           <span class="mode-badge">${dict.configurator.comingSoonBadge}</span>
         </div>
@@ -241,9 +241,42 @@ export function renderTerms() {
   observeReveal(container.querySelectorAll(".reveal"));
 }
 
+let cachedTicker = null;
+
+async function loadTicker() {
+  if (cachedTicker) return cachedTicker;
+  try {
+    const res = await fetch("/api/ticker", { cache: "no-store" });
+    if (!res.ok) throw new Error("bad status");
+    const data = await res.json();
+    if (Array.isArray(data.lines) && data.lines.length > 0) {
+      cachedTicker = data.lines;
+      return cachedTicker;
+    }
+    throw new Error("empty payload");
+  } catch (err) {
+    cachedTicker = defaultTicker;
+    return cachedTicker;
+  }
+}
+
 /* ---------------------------------------------------------------------------
-   Hero stats strip — icon + big count-up number + label
+   Hero ticker — scrolling "heading lines"
    --------------------------------------------------------------------------- */
+export function renderTicker(lines) {
+  const track = document.getElementById("hero-ticker-track");
+  if (!track) return;
+  const lang = getCurrentLanguage();
+
+  const itemsHtml = lines
+    .map((line) => `<span class="hero-ticker-item">${line[lang]}</span><span class="hero-ticker-sep">&bull;</span>`)
+    .join("");
+
+  // Render the list twice back-to-back so the scroll animation (translateX
+  // 0 -> -50%) loops seamlessly — the second copy lands exactly where the
+  // first one started.
+  track.innerHTML = itemsHtml + itemsHtml;
+}
 let statsHasPlayedOnce = false;
 
 function animateCount(el, target, suffix, duration) {
@@ -324,7 +357,9 @@ export function renderStats() {
    --------------------------------------------------------------------------- */
 export async function renderAll() {
   const svc = await loadServices();
+  const ticker = await loadTicker();
   renderStats();
+  renderTicker(ticker);
   renderServices(svc);
   renderConfigurator();
   renderComparison(svc);

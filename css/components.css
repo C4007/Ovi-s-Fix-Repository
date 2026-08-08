@@ -204,8 +204,8 @@
 
 .brand-name {
   /* Deliberately NOT var(--font-display) — that swaps with language, and a
-     brand wordmark should never change typeface. Space Grotesk, always. */
-  font-family: "Space Grotesk", sans-serif;
+     brand wordmark should never change typeface. Montserrat, always. */
+  font-family: "Montserrat", sans-serif;
   font-weight: 800;
   font-size: 1.3rem;
   color: var(--text-heading);
@@ -387,12 +387,8 @@
 }
 
 .hero-title {
-  /* "Curly" treatment for the English tagline specifically. Lobster has no
-     Bengali glyphs, so Bangla text falls straight through to Kalpurush via
-     the --font-display chain below — no extra rule needed for that. */
-  font-family: "Lobster", var(--font-display);
-  font-weight: 400;
-  letter-spacing: normal;
+  font-family: "Montserrat", var(--font-display);
+  font-weight: 800;
   font-size: var(--fs-h1);
   margin-top: 6px;
 }
@@ -462,7 +458,7 @@
 }
 
 .hero-stat-value {
-  font-family: "Poppins", var(--font-body);
+  font-family: "Montserrat", var(--font-body);
   font-size: 2.1rem;
   font-weight: 800;
   color: var(--text-heading);
@@ -491,78 +487,56 @@
 
 .hero-visual {
   position: relative;
-  perspective: 1000px;
 }
 
-.hero-card {
-  position: relative;
+.hero-featured-image {
+  width: 100%;
   border-radius: var(--radius-lg);
-  padding: 14px;
-  transform-style: preserve-3d;
+  aspect-ratio: 4 / 5;
+  object-fit: cover;
+  box-shadow: var(--shadow-card-hover);
+}
+
+/* ---- Hero ticker: scrolling "heading lines", admin-editable ---- */
+.hero-ticker {
+  margin-top: 20px;
+  padding-top: 16px;
+  border-top: 1px solid var(--border-soft);
+  overflow: hidden;
+  -webkit-mask-image: linear-gradient(90deg, transparent, #000 6%, #000 94%, transparent);
+  mask-image: linear-gradient(90deg, transparent, #000 6%, #000 94%, transparent);
+}
+
+.hero-ticker-track {
+  display: inline-flex;
+  align-items: center;
+  gap: 16px;
+  white-space: nowrap;
+  animation: ticker-scroll 24s linear infinite;
   will-change: transform;
 }
 
-.hero-card-media {
-  border-radius: calc(var(--radius-lg) - 10px);
-  overflow: hidden;
-  aspect-ratio: 4 / 5;
-}
-
-.hero-card-media img {
-  width: 100%;
-  height: 100%;
-  object-fit: cover;
-  transform: scale(1.02);
-}
-
-.hero-status-chip {
-  position: absolute;
-  top: 30px;
-  left: 30px;
-  display: inline-flex;
-  align-items: center;
-  gap: 8px;
-  padding: 8px 14px;
-  border-radius: var(--radius-pill);
-  font-size: 11px;
-  font-weight: 600;
-  color: #fff;
-  z-index: 2;
-}
-
-.status-dot {
-  width: 7px;
-  height: 7px;
-  border-radius: 50%;
-  background: var(--success);
-  box-shadow: 0 0 0 3px rgba(61, 219, 150, 0.3);
-  animation: pulse-dot 2s infinite;
-}
-
-.hero-badge {
-  position: absolute;
-  left: -20px;
-  bottom: 34px;
-  padding: 16px 22px;
-  border-radius: var(--radius-md);
-  z-index: 2;
-  max-width: 220px;
-}
-
-.hero-badge-label {
-  font-family: var(--font-mono);
-  font-size: 12px;
-  letter-spacing: 0.1em;
-  text-transform: uppercase;
-  color: var(--signal-red);
-}
-
-.hero-badge-service {
+.hero-ticker-item {
   font-family: var(--font-display);
-  font-weight: 600;
-  font-size: 0.95rem;
+  font-weight: 700;
+  font-size: 1rem;
   color: var(--text-heading);
-  margin-top: 4px;
+}
+
+.hero-ticker-sep {
+  color: var(--signal-red);
+  font-size: 0.8rem;
+}
+
+@keyframes ticker-scroll {
+  from { transform: translateX(0); }
+  to { transform: translateX(-50%); }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .hero-ticker-track {
+    animation: none;
+  }
 }
 
 .scroll-indicator {
@@ -890,6 +864,17 @@
   width: 100%;
   height: 100%;
   object-fit: cover;
+  object-position: 50% 50%;
+}
+
+/* This image's baked-in "Design Your Perfect Gaming PC" text sits near the
+   top of the source photo. A centered crop (default 50% 50% above) trims
+   into that headline. Lowering the Y value shifts the crop window UP the
+   source image, leaving more breathing room above the text and trimming
+   more from the (less important) bottom instead.
+   Tune by feel: 0% = no crop off the top at all, 50% = centered. */
+.mode-card-image[data-mode="preconfigured"] img {
+  object-position: 50% 12%;
 }
 
 .mode-badge {
@@ -1338,7 +1323,6 @@
    look oddly spaced out).
    --------------------------------------------------------------------------- */
 :root[data-lang="bn"] .eyebrow,
-:root[data-lang="bn"] .hero-badge-label,
 :root[data-lang="bn"] .comparison-table th,
 :root[data-lang="bn"] .form-label,
 :root[data-lang="bn"] .footer-col h4,

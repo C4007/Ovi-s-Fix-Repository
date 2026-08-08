@@ -11,7 +11,7 @@ import { initLanguage } from "./language.js";
 import { renderAll } from "./render.js";
 import { initMobileMenu } from "./navbar.js";
 import { initContactForm } from "./contact-form.js";
-import { observeReveal, initMouseParallax, initLoadingScreen, initNavbarScroll } from "./animations.js";
+import { observeReveal, initLoadingScreen, initNavbarScroll } from "./animations.js";
 
 function setCopyrightYear() {
   const el = document.getElementById("year");
@@ -26,7 +26,6 @@ async function init() {
   await renderAll(); // builds services (fetched live, falls back to bundled defaults), comparison, why-us, FAQ, terms
   initMobileMenu();
   initNavbarScroll();
-  initMouseParallax();
   initContactForm();
 
   // Catch any static (non data-driven) .reveal elements already in the HTML —

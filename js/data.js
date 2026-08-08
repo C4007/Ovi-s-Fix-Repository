@@ -428,6 +428,16 @@ export const configurator = {
   ],
 };
 
+// ---- Hero ticker lines ------------------------------------------------
+// FALLBACK dataset — same pattern as defaultServices above. Live data is
+// admin-editable at /admin.html and fetched from /api/ticker.
+export const defaultTicker = [
+  { en: "Custom PC Build — From ৳3,000", bn: "কাস্টম পিসি বিল্ড — ৳৩,০০০ থেকে শুরু" },
+  { en: "7-Day Warranty on Every Repair", bn: "প্রতিটি মেরামতে ৭ দিনের ওয়ারেন্টি" },
+  { en: "Free Diagnostic Report, Every Visit", bn: "প্রতি ভিজিটে ফ্রি ডায়াগনস্টিক রিপোর্ট" },
+  { en: "Home & On-Site Service in Dhaka", bn: "ঢাকায় হোম ও অন-সাইট সার্ভিস" },
+];
+
 // ---- Trust stats strip (hero) ---------------------------------------------
 export const stats = [
   { count: 18, suffix: "", icon: "cpu", label: { en: "services offered", bn: "সার্ভিস অফার করা হয়" } },

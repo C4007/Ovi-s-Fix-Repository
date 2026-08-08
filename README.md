@@ -27,8 +27,8 @@ ovis-fix-website/
 ├── images/                    Photos, logo, generated favicons
 ├── lib/                         Shared backend logic (see §7) — used by BOTH platforms below
 ├── api/                          Vercel serverless functions
-│   ├── contact.js, services.js
-│   └── admin/  login.js, logout.js, check.js, services.js
+│   ├── contact.js, services.js, ticker.js
+│   └── admin/  login.js, logout.js, check.js, services.js, ticker.js
 ├── functions/api/                 Cloudflare Pages Functions — same endpoints, same lib/
 ├── vercel.json                     Clean URLs (so /terms works, not just /terms.html)
 └── .env.example                     Every environment variable you'll need, explained
@@ -119,22 +119,29 @@ people to WhatsApp/email instead of silently failing.
 
 ---
 
-## 7. Admin panel — manage services without touching code
+## 7. Admin panel — manage services & the hero ticker without touching code
 
-Visit `/admin.html`, log in, and you can add, edit, or delete any service —
-price, bilingual title/description, image filename — and hit **Save All
-Changes**. The homepage picks up the new list on its next visit.
+Visit `/admin.html`, log in, and you can:
+- Add, edit, reorder, or delete the **hero ticker lines** — the scrolling
+  strip of text under the homepage's featured image.
+- Add, edit, or delete any **service** — price, bilingual title/description,
+  image filename.
+
+Hit **Save** on either section and the homepage picks up the change on its
+next visit. The two are independent — saving one doesn't touch the other.
 
 ### How it works under the hood
 
-- Services are stored as one JSON blob in **Upstash Redis** (a serverless
-  Redis host with a generous free tier), read through a small REST API
-  using plain `fetch` — same "no SDK" approach as the contact form, so it
-  works identically on Vercel and Cloudflare.
-- The homepage always tries `/api/services` first; if Upstash isn't set up
-  yet, or the request fails for any reason, it silently falls back to the
-  bundled default list in `js/data.js`. **The public site can never break
-  because of the admin panel** — worst case, it just shows the defaults.
+- Both the services list and the ticker lines are stored as JSON blobs in
+  **Upstash Redis** (a serverless Redis host with a generous free tier),
+  read through a small REST API using plain `fetch` — same "no SDK"
+  approach as the contact form, so it works identically on Vercel and
+  Cloudflare.
+- The homepage always tries `/api/services` and `/api/ticker` first; if
+  Upstash isn't set up yet, or a request fails for any reason, it silently
+  falls back to the bundled defaults in `js/data.js`. **The public site can
+  never break because of the admin panel** — worst case, it just shows the
+  defaults.
 - Logging in sets a signed, HTTP-only cookie (24-hour expiry). There's no
   session database — the signature itself proves it's legitimate, checked
   fresh on every request. This is deliberately simple: appropriate
@@ -195,13 +202,14 @@ one file. Let me know and I can help sort it out.
   numbers whenever you've researched local competitors.
 - **Bangla copy** — I translated everything myself; worth a proofread pass
   in `js/translations.js` and `js/data.js` before launch.
-- **Curly tagline font** — the hero headline uses "Lobster" for a bold
-  script feel. If it's not to your taste, two easy swaps in
-  `css/components.css` under `.hero-title`: "Pacifico" (lighter, more
-  casual) or "Caveat" (handwriting-style). Just change the font name and
-  update the Google Fonts `<link>` in both HTML files to match.
-- **Stat numbers font** — currently Poppins; Montserrat is a one-line swap
-  in the same file if you'd rather try that instead.
+- **Curly tagline font** — replaced with Montserrat Bold across the whole
+  site per your latest direction; the old Lobster/Space Grotesk/Poppins
+  mix is gone.
+- **Configurator image crop** — the Pre-configured Mode card's photo has
+  its crop position tuned in `css/components.css` under
+  `.mode-card-image[data-mode="preconfigured"] img` (look for the comment
+  explaining the 0–100% scale). Nudge that one number if you want more or
+  less headroom above the text baked into that photo.
 - **Open Graph image** — `index.html` points `og:image` at `images/logo.jpg`
   as a relative path; once you have a real domain, change it to the full
   `https://yourdomain.com/images/logo.jpg` so link previews on Facebook/
@@ -222,6 +230,23 @@ I just didn't want the website itself to be what's publicly marketing it.
 
 ## 9. Design notes
 
+- **Dark mode background**: near-black (`#050608`) rather than navy-gray,
+  with three very low-opacity radial gradients (blue and a whisper of red)
+  layered on top via `body`'s background in `css/base.css` — echoes the
+  "deep black with glowing RGB lighting" look of the product photography
+  instead of a flat navy fill. Subtle enough that text contrast is
+  unaffected.
+- **Typography**: Montserrat across all English text — headings, body,
+  the brand name, and the hero stat numbers all share it now, at
+  different weights for hierarchy (800 for the hero headline and stat
+  numbers, 600–700 for section headings, 400–500 for body copy). Bangla
+  stays on Kalpurush throughout, untouched. Prices and "eyebrow" labels
+  keep IBM Plex Mono — a deliberate, separate treatment (see the ticket
+  note below), not part of the general text system.
+- **Hero ticker**: the scrolling line under the featured image is
+  admin-editable (§7) and loops seamlessly — the line list renders twice
+  back-to-back and the CSS animation just slides by exactly one copy's
+  width, so it never visibly "jumps."
 - **Glass vs. acrylic**: desktop cards use a lighter, translucent `.glass`
   style. The mobile popover menu uses a separate, near-opaque `.acrylic`
   style instead — the fix for glass panels overlapping and getting

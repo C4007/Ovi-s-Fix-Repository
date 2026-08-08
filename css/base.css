@@ -37,6 +37,19 @@ body {
   overflow-x: hidden;
 }
 
+/* Deep black base with soft navy/red glows bleeding in from the edges —
+   echoes the product photography (dark background, glowing blue/red RGB
+   lighting) instead of a flat navy-gray fill. Kept low-opacity so text
+   contrast is unaffected. */
+:root[data-theme="dark"] body {
+  background:
+    radial-gradient(ellipse 1100px 650px at 12% -8%, rgba(47, 111, 237, 0.14), transparent 60%),
+    radial-gradient(ellipse 900px 550px at 105% 25%, rgba(228, 52, 47, 0.07), transparent 60%),
+    radial-gradient(ellipse 800px 500px at 0% 85%, rgba(47, 111, 237, 0.08), transparent 60%),
+    var(--bg);
+  background-attachment: fixed;
+}
+
 body.no-scroll {
   overflow: hidden;
   height: 100vh;
