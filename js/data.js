@@ -428,6 +428,12 @@ export const configurator = {
   ],
 };
 
+// ---- Hero banner image ------------------------------------------------
+// FALLBACK — same pattern as defaultServices/defaultTicker above. Live
+// data is admin-uploaded at /admin.html (with strict resolution
+// validation) and fetched from /api/hero.
+export const defaultHeroImage = "images/hero-banner.webp";
+
 // ---- Hero ticker lines ------------------------------------------------
 // FALLBACK dataset — same pattern as defaultServices above. Live data is
 // admin-editable at /admin.html and fetched from /api/ticker.

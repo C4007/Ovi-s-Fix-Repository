@@ -10,6 +10,7 @@ import { initLoadingScreen } from "./animations.js";
 
 let currentServices = [];
 let currentTicker = [];
+let pendingHeroImage = null; // { dataUrl, width, height } once a valid file is chosen
 
 function $(id) {
   return document.getElementById(id);
@@ -182,6 +183,114 @@ async function loadTickerIntoDashboard() {
     currentTicker = [];
   }
   renderTickerList();
+}
+
+/* ---------------------------------------------------------------------------
+   Hero banner image (strict client-side resolution validation before save)
+   --------------------------------------------------------------------------- */
+
+// Mirrors lib/validate-hero.js — duplicated here because this runs in the
+// browser and can't import server-side lib/ files without a build step.
+// Keep these two in sync if the requirements ever change.
+const HERO_MIN_WIDTH = 1600;
+const HERO_ASPECT_TARGET = 2560 / 1086;
+const HERO_ASPECT_TOLERANCE = 0.15;
+const HERO_MAX_DATA_URL_LENGTH = 2_800_000;
+
+function validateHeroClientSide(dataUrl, width, height) {
+  if (dataUrl.length > HERO_MAX_DATA_URL_LENGTH) {
+    return "Image file is too large — please use a more compressed export (under ~2MB).";
+  }
+  if (width < HERO_MIN_WIDTH) {
+    return `Image is too small — needs to be at least ${HERO_MIN_WIDTH}px wide (yours is ${width}px).`;
+  }
+  const aspect = width / height;
+  if (Math.abs(aspect - HERO_ASPECT_TARGET) > HERO_ASPECT_TOLERANCE) {
+    return `Image proportions are off — needs to be a wide banner shape (around ${HERO_ASPECT_TARGET.toFixed(2)}:1, like 2560×1086). Yours is ${aspect.toFixed(2)}:1.`;
+  }
+  return null;
+}
+
+function handleHeroFileSelect(e) {
+  const file = e.target.files[0];
+  const statusEl = $("hero-status");
+  clearStatus(statusEl);
+  $("hero-save-btn").disabled = true;
+  pendingHeroImage = null;
+  if (!file) return;
+
+  const reader = new FileReader();
+  reader.onload = () => {
+    const dataUrl = reader.result;
+    const img = new Image();
+    img.onload = () => {
+      const width = img.naturalWidth;
+      const height = img.naturalHeight;
+      const error = validateHeroClientSide(dataUrl, width, height);
+      if (error) {
+        showStatus(statusEl, "error", error);
+        return;
+      }
+      pendingHeroImage = { dataUrl, width, height };
+      $("hero-preview-img").src = dataUrl;
+      $("hero-preview-meta").textContent = `${width} × ${height}px — ready to save`;
+      $("hero-save-btn").disabled = false;
+      showStatus(statusEl, "success", "Looks good — click Save to publish it.");
+    };
+    img.onerror = () => showStatus(statusEl, "error", "Couldn't read this file as an image.");
+    img.src = dataUrl;
+  };
+  reader.onerror = () => showStatus(statusEl, "error", "Couldn't read this file.");
+  reader.readAsDataURL(file);
+}
+
+async function handleSaveHero() {
+  if (!pendingHeroImage) return;
+  const statusEl = $("hero-status");
+  const saveBtn = $("hero-save-btn");
+  saveBtn.disabled = true;
+  const originalLabel = saveBtn.textContent;
+  saveBtn.textContent = "Saving...";
+
+  try {
+    const res = await fetch("/api/admin/hero", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ image: pendingHeroImage }),
+    });
+    const data = await res.json();
+    if (!res.ok || !data.success) {
+      showStatus(statusEl, "error", data.error || "Could not save the hero image.");
+      saveBtn.disabled = false;
+      saveBtn.textContent = originalLabel;
+      return;
+    }
+    showStatus(statusEl, "success", "Saved! The homepage will show this on next load.");
+    pendingHeroImage = null;
+    saveBtn.textContent = originalLabel;
+  } catch (err) {
+    showStatus(statusEl, "error", "Network error — could not reach the server.");
+    saveBtn.disabled = false;
+    saveBtn.textContent = originalLabel;
+  }
+}
+
+async function loadHeroIntoDashboard() {
+  const img = $("hero-preview-img");
+  const meta = $("hero-preview-meta");
+  try {
+    const res = await fetch("/api/hero", { cache: "no-store" });
+    const data = await res.json();
+    if (data.image && data.image.dataUrl) {
+      img.src = data.image.dataUrl;
+      meta.textContent = `Current: ${data.image.width} × ${data.image.height}px`;
+      return;
+    }
+  } catch (err) {
+    /* fall through to default preview below */
+  }
+  img.src = "images/hero-banner.webp";
+  meta.textContent = "Using the default bundled image — no custom upload saved yet.";
 }
 
 /* ---------------------------------------------------------------------------
@@ -395,7 +504,7 @@ async function loadServicesIntoDashboard() {
 }
 
 async function loadDashboardData() {
-  await Promise.all([loadServicesIntoDashboard(), loadTickerIntoDashboard()]);
+  await Promise.all([loadServicesIntoDashboard(), loadTickerIntoDashboard(), loadHeroIntoDashboard()]);
 }
 
 async function handleLoginSubmit(e) {
@@ -455,6 +564,8 @@ async function init() {
   $("admin-save-btn").addEventListener("click", handleSave);
   $("ticker-add-btn").addEventListener("click", handleAddTickerLine);
   $("ticker-save-btn").addEventListener("click", handleSaveTicker);
+  $("hero-file-input").addEventListener("change", handleHeroFileSelect);
+  $("hero-save-btn").addEventListener("click", handleSaveHero);
 
   const authenticated = await checkAuth();
   if (authenticated) {

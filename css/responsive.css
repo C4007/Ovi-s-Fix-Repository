@@ -4,16 +4,6 @@
 
 /* ---- Tablet ---- */
 @media (max-width: 980px) {
-  .hero-grid {
-    grid-template-columns: 1fr;
-    gap: 60px;
-  }
-
-  .hero-visual {
-    max-width: 420px;
-    margin: 0 auto;
-  }
-
   .contact-grid {
     grid-template-columns: 1fr;
   }
@@ -51,6 +41,7 @@
 @media (max-width: 640px) {
   :root {
     --nav-height: 68px;
+    --ticker-bar-height: 32px;
   }
 
   .container {
@@ -66,11 +57,13 @@
   }
 
   .hero {
-    padding: calc(var(--nav-height) + 32px) 0 64px;
+    padding: calc(var(--nav-height) + var(--ticker-bar-height) + 32px) 0 64px;
+    min-height: auto;
+    background-position: 70% center;
   }
 
   .hero-title {
-    font-size: clamp(2.1rem, 9vw, 2.8rem);
+    font-size: clamp(1.9rem, 8.5vw, 2.6rem);
   }
 
   .hero-cta {
@@ -96,7 +89,7 @@
   }
 
   .hero-ticker-item {
-    font-size: 0.9rem;
+    font-size: 0.68rem;
   }
 
   .services-grid {

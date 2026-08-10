@@ -27,8 +27,8 @@ ovis-fix-website/
 ├── images/                    Photos, logo, generated favicons
 ├── lib/                         Shared backend logic (see §7) — used by BOTH platforms below
 ├── api/                          Vercel serverless functions
-│   ├── contact.js, services.js, ticker.js
-│   └── admin/  login.js, logout.js, check.js, services.js, ticker.js
+│   ├── contact.js, services.js, ticker.js, hero.js
+│   └── admin/  login.js, logout.js, check.js, services.js, ticker.js, hero.js
 ├── functions/api/                 Cloudflare Pages Functions — same endpoints, same lib/
 ├── vercel.json                     Clean URLs (so /terms works, not just /terms.html)
 └── .env.example                     Every environment variable you'll need, explained
@@ -119,29 +119,38 @@ people to WhatsApp/email instead of silently failing.
 
 ---
 
-## 7. Admin panel — manage services & the hero ticker without touching code
+## 7. Admin panel — manage the hero banner, ticker & services without touching code
 
 Visit `/admin.html`, log in, and you can:
-- Add, edit, reorder, or delete the **hero ticker lines** — the scrolling
-  strip of text under the homepage's featured image.
+- **Upload a new hero banner image.** Strictly validated before it's ever
+  saved — needs to be a wide banner shape (~2.36:1, like the default
+  2560×1086), at least 1600px wide, under ~2MB. Anything else is rejected
+  right in the browser with a clear reason, before it ever reaches the
+  server.
+- Add, edit, reorder, or delete the **top ticker lines** — the strip of
+  text pinned to the top of every page, always visible.
 - Add, edit, or delete any **service** — price, bilingual title/description,
   image filename.
 
-Hit **Save** on either section and the homepage picks up the change on its
-next visit. The two are independent — saving one doesn't touch the other.
+Each section saves independently — saving one doesn't touch the others.
 
 ### How it works under the hood
 
-- Both the services list and the ticker lines are stored as JSON blobs in
-  **Upstash Redis** (a serverless Redis host with a generous free tier),
-  read through a small REST API using plain `fetch` — same "no SDK"
-  approach as the contact form, so it works identically on Vercel and
-  Cloudflare.
-- The homepage always tries `/api/services` and `/api/ticker` first; if
-  Upstash isn't set up yet, or a request fails for any reason, it silently
-  falls back to the bundled defaults in `js/data.js`. **The public site can
-  never break because of the admin panel** — worst case, it just shows the
-  defaults.
+- Services, ticker lines, and the hero image are all stored in **Upstash
+  Redis** (a serverless Redis host with a generous free tier), read
+  through a small REST API using plain `fetch` — same "no SDK" approach as
+  the contact form, so it works identically on Vercel and Cloudflare.
+- The hero image is the one exception worth understanding: it's stored as
+  a base64 data URL rather than a filename reference, since there's no
+  file/object storage wired up (that would mean a whole separate service —
+  Vercel Blob or Cloudflare R2 — which is a bigger feature on its own).
+  This works well for exactly one banner image within the strict size
+  limit above; it isn't meant to become a general media library.
+- The homepage always tries `/api/hero`, `/api/services`, and `/api/ticker`
+  first; if Upstash isn't set up yet, or a request fails for any reason,
+  it silently falls back to the bundled defaults (`images/hero-banner.webp`
+  and the defaults in `js/data.js`). **The public site can never break
+  because of the admin panel** — worst case, it just shows the defaults.
 - Logging in sets a signed, HTTP-only cookie (24-hour expiry). There's no
   session database — the signature itself proves it's legitimate, checked
   fresh on every request. This is deliberately simple: appropriate
@@ -230,6 +239,20 @@ I just didn't want the website itself to be what's publicly marketing it.
 
 ## 9. Design notes
 
+- **The hero is intentionally dark regardless of the light/dark toggle.**
+  It's a full-bleed banner image with a dark gradient scrim (`.hero-scrim`
+  in `css/components.css`) for text legibility, and its text colors are
+  hardcoded light rather than theme-variable, on purpose — a permanently
+  "cinematic" hero is common even on otherwise light sites, and it means
+  the banner image never has to fight with the toggle. Everything below
+  the hero still fully respects light/dark as before.
+- **The ticker is a fixed bar pinned above the navbar** (`.top-ticker`),
+  not part of the hero anymore — it stays visible at the very top of the
+  viewport regardless of scroll position, on every page. `--ticker-bar-height`
+  in `css/variables.css` is the single source of truth for its height;
+  everything that needs to sit below it (`.navbar`, hero padding, the
+  mobile menu's open position, `terms.html`/`admin.html` content padding)
+  reads from that variable, so resizing the bar is a one-line change.
 - **Dark mode background**: near-black (`#050608`) rather than navy-gray,
   with three very low-opacity radial gradients (blue and a whisper of red)
   layered on top via `body`'s background in `css/base.css` — echoes the
@@ -237,14 +260,16 @@ I just didn't want the website itself to be what's publicly marketing it.
   instead of a flat navy fill. Subtle enough that text contrast is
   unaffected.
 - **Typography**: Montserrat across all English text — headings, body,
-  the brand name, and the hero stat numbers all share it now, at
-  different weights for hierarchy (800 for the hero headline and stat
-  numbers, 600–700 for section headings, 400–500 for body copy). Bangla
-  stays on Kalpurush throughout, untouched. Prices and "eyebrow" labels
-  keep IBM Plex Mono — a deliberate, separate treatment (see the ticket
-  note below), not part of the general text system.
-- **Hero ticker**: the scrolling line under the featured image is
-  admin-editable (§7) and loops seamlessly — the line list renders twice
+  the brand name, hero stat numbers, and small labels ("eyebrows", table
+  headers, badges) all share it now, at different weights for hierarchy
+  (800 for the hero headline and stat numbers, 600–700 for section
+  headings and badges, 400 for eyebrow-style labels, 400–500 for body
+  copy). Bangla stays on Kalpurush throughout, untouched. Prices,
+  percentages, and the terms-page numbering keep IBM Plex Mono — a
+  deliberate, separate "this is exact data" treatment (see the ticket note
+  below), not part of the general text system.
+- **Hero ticker**: pinned to the top of every page and admin-editable
+  (§7), loops seamlessly — the line list renders twice
   back-to-back and the CSS animation just slides by exactly one copy's
   width, so it never visibly "jumps."
 - **Glass vs. acrylic**: desktop cards use a lighter, translucent `.glass`

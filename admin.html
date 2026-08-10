@@ -45,6 +45,10 @@
   </div>
 </div>
 
+<div class="top-ticker">
+  <span class="hero-ticker-item">Ovi's Fix — Admin Panel</span>
+</div>
+
 <nav class="navbar scrolled" id="navbar">
   <div class="container navbar-inner">
     <a href="admin.html" class="brand">
@@ -63,7 +67,7 @@
 </nav>
 
 <main>
-  <section class="section" style="padding-top: calc(var(--nav-height) + 48px); min-height: 80vh;">
+  <section class="section" style="padding-top: calc(var(--nav-height) + var(--ticker-bar-height) + 48px); min-height: 80vh;">
     <div class="container">
 
       <div id="admin-login-view" class="admin-login-wrap">
@@ -85,8 +89,26 @@
         <div class="admin-dashboard-head">
           <div>
             <div class="eyebrow">Admin</div>
+            <h2>Hero Banner Image</h2>
+            <p class="section-sub">Needs a wide banner shape — around 2.36:1 (like the default, 2560×1086), at least 1600px wide, under ~2MB. Anything else is rejected before it saves, so the homepage never ends up with a stretched or cropped mess.</p>
+          </div>
+        </div>
+        <div class="form-status" id="hero-status" role="status"></div>
+        <div class="admin-hero-preview glass" id="hero-preview-wrap">
+          <img id="hero-preview-img" alt="Current hero banner preview">
+        </div>
+        <p class="admin-id-hint" id="hero-preview-meta"></p>
+        <div class="admin-hero-upload">
+          <label class="btn btn-secondary" for="hero-file-input">Choose Image&hellip;</label>
+          <input type="file" id="hero-file-input" accept="image/*" style="display:none">
+          <button type="button" class="btn btn-primary" id="hero-save-btn" disabled>Save Hero Image</button>
+        </div>
+
+        <div class="admin-dashboard-head" style="margin-top:52px">
+          <div>
+            <div class="eyebrow">Admin</div>
             <h2>Hero Ticker</h2>
-            <p class="section-sub">The scrolling line of text under the homepage's featured image. Add, edit, or reorder — the order here is the order it scrolls.</p>
+            <p class="section-sub">The scrolling line of text pinned to the very top of every page. Add, edit, or reorder — the order here is the order it scrolls.</p>
           </div>
           <div class="admin-dashboard-actions">
             <button type="button" class="btn btn-secondary" id="ticker-add-btn">+ Add Line</button>

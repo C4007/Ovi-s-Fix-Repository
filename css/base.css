@@ -164,7 +164,8 @@ textarea {
   display: inline-flex;
   align-items: center;
   gap: 8px;
-  font-family: var(--font-mono);
+  font-family: "Montserrat", var(--font-body);
+  font-weight: 400;
   font-size: var(--fs-eyebrow);
   letter-spacing: 0.14em;
   text-transform: uppercase;

@@ -5,7 +5,7 @@
    "ovisfix:languagechange" event, so containers are safe to fully rebuild.
    ========================================================================== */
 
-import { defaultServices, defaultTicker, comparison, whyUs, faq, terms, stats, configurator } from "./data.js";
+import { defaultServices, defaultTicker, defaultHeroImage, comparison, whyUs, faq, terms, stats, configurator } from "./data.js";
 import { translations } from "./translations.js";
 import { icon } from "./icons.js";
 import { getCurrentLanguage } from "./language.js";
@@ -260,6 +260,31 @@ async function loadTicker() {
   }
 }
 
+let cachedHeroImage = null;
+
+async function loadHeroImage() {
+  if (cachedHeroImage) return cachedHeroImage;
+  try {
+    const res = await fetch("/api/hero", { cache: "no-store" });
+    if (!res.ok) throw new Error("bad status");
+    const data = await res.json();
+    if (data.image && typeof data.image.dataUrl === "string") {
+      cachedHeroImage = data.image.dataUrl;
+      return cachedHeroImage;
+    }
+    throw new Error("no custom image set");
+  } catch (err) {
+    cachedHeroImage = defaultHeroImage;
+    return cachedHeroImage;
+  }
+}
+
+export function renderHeroImage(src) {
+  const hero = document.querySelector(".hero");
+  if (!hero) return;
+  hero.style.setProperty("--hero-image", `url("${src}")`);
+}
+
 /* ---------------------------------------------------------------------------
    Hero ticker — scrolling "heading lines"
    --------------------------------------------------------------------------- */
@@ -358,8 +383,10 @@ export function renderStats() {
 export async function renderAll() {
   const svc = await loadServices();
   const ticker = await loadTicker();
+  const heroImage = await loadHeroImage();
   renderStats();
   renderTicker(ticker);
+  renderHeroImage(heroImage);
   renderServices(svc);
   renderConfigurator();
   renderComparison(svc);
