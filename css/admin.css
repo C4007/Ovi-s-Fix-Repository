@@ -1,0 +1,223 @@
+/* ==========================================================================
+   Ovi's Fix — admin.css
+   Styles specific to admin.html. Kept out of components.css so the public
+   site's CSS bundle isn't carrying weight it never uses.
+   ========================================================================== */
+
+.admin-nav-label {
+  font-family: "Montserrat", var(--font-body);
+  font-weight: 400;
+  font-size: 11px;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--text-muted);
+  padding: 4px 10px;
+  border: 1px solid var(--border-soft);
+  border-radius: var(--radius-pill);
+}
+
+/* ---- Login ---- */
+.admin-login-wrap {
+  min-height: 60vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.admin-login-card {
+  width: 100%;
+  max-width: 380px;
+  padding: 34px 30px;
+  border-radius: var(--radius-lg);
+  text-align: center;
+}
+
+.admin-login-card h1 {
+  font-size: 1.3rem;
+}
+
+.admin-login-card > p {
+  margin-top: 8px;
+  font-size: var(--fs-body-sm);
+  color: var(--text-muted);
+}
+
+.admin-login-card form {
+  margin-top: 26px;
+  text-align: left;
+}
+
+/* ---- Dashboard ---- */
+.admin-dashboard-head {
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-between;
+  gap: 20px;
+  flex-wrap: wrap;
+  margin-bottom: 22px;
+}
+
+.admin-dashboard-actions {
+  display: flex;
+  gap: 10px;
+  flex-wrap: wrap;
+}
+
+.admin-services-list {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  margin-top: 20px;
+}
+
+.admin-service-card {
+  border-radius: var(--radius-md);
+  overflow: hidden;
+}
+
+.admin-service-summary {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 14px;
+  padding: 16px 20px;
+  flex-wrap: wrap;
+}
+
+.admin-service-summary-info {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  min-width: 0;
+}
+
+.admin-service-summary-title {
+  font-size: 0.9rem;
+  color: var(--text-body-key);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  max-width: 40ch;
+}
+
+.admin-service-summary-price {
+  font-family: var(--font-mono);
+  font-size: 12px;
+  color: var(--signal-red);
+  font-weight: 700;
+  flex-shrink: 0;
+}
+
+.admin-service-summary-badge {
+  font-family: var(--font-mono);
+  font-size: 10px;
+  padding: 3px 9px;
+  border-radius: var(--radius-pill);
+  background: var(--glass-bg-strong);
+  border: 1px solid var(--border-soft);
+  color: var(--text-muted);
+  flex-shrink: 0;
+}
+
+.admin-service-summary-actions {
+  display: flex;
+  gap: 8px;
+  flex-shrink: 0;
+}
+
+.btn-sm {
+  padding: 8px 16px;
+  font-size: 12px;
+  border-radius: var(--radius-pill);
+  border: 1px solid var(--border-soft);
+  background: var(--glass-bg-strong);
+  color: var(--text-body-key);
+  font-weight: 600;
+  transition: border-color var(--t-fast) var(--ease-out), color var(--t-fast) var(--ease-out);
+}
+
+.btn-sm:hover {
+  border-color: var(--circuit-blue);
+  color: var(--circuit-blue);
+}
+
+.btn-sm.danger:hover {
+  border-color: var(--signal-red);
+  color: var(--signal-red);
+}
+
+.admin-service-form {
+  padding: 4px 20px 22px;
+  border-top: 1px solid var(--border-soft);
+}
+
+.admin-form-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 4px 16px;
+  margin-top: 16px;
+}
+
+.admin-form-grid .full-width {
+  grid-column: 1 / -1;
+}
+
+.checkbox-group label {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: var(--fs-body-sm);
+  color: var(--text-body-key);
+  cursor: pointer;
+  padding-top: 26px;
+}
+
+.checkbox-group input[type="checkbox"] {
+  width: 16px;
+  height: 16px;
+  accent-color: var(--signal-red);
+}
+
+.admin-id-hint {
+  font-size: 11px;
+  color: var(--text-muted);
+  margin-top: 6px;
+}
+
+.admin-empty-state {
+  padding: 40px 20px;
+  text-align: center;
+  color: var(--text-muted);
+  font-size: var(--fs-body-sm);
+  border-radius: var(--radius-md);
+}
+
+.admin-hero-preview {
+  margin-top: 18px;
+  border-radius: var(--radius-lg);
+  overflow: hidden;
+  max-width: 640px;
+  aspect-ratio: 2.36 / 1;
+  background: var(--bg-alt);
+}
+
+.admin-hero-preview img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+}
+
+.admin-hero-upload {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-top: 14px;
+  flex-wrap: wrap;
+}
+
+@media (max-width: 640px) {
+  .admin-form-grid {
+    grid-template-columns: 1fr;
+  }
+}
