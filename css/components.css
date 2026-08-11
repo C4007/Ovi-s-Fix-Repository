@@ -317,7 +317,10 @@
   opacity: 0;
   visibility: hidden;
   transition: opacity var(--t-med) var(--ease-out), visibility var(--t-med) var(--ease-out);
-  z-index: 90;
+  /* Must sit above .top-ticker (110) and .navbar (100), not just below
+     them — otherwise the fixed ticker bar visibly stays "on top" while
+     the mobile menu is open instead of being dimmed by the scrim underneath it. */
+  z-index: 111;
 }
 
 .mobile-menu-scrim.is-open {
@@ -330,7 +333,7 @@
   top: 12px;
   right: 12px;
   left: 12px;
-  z-index: 95;
+  z-index: 112;
   border-radius: var(--radius-lg);
   padding: 18px;
   transform: translateY(-14px) scale(0.98);
@@ -379,7 +382,14 @@
   display: flex;
   align-items: center;
   background-color: #050608;
-  background-image: var(--hero-image, none);
+  /* Bundled default banner is the CSS-level fallback so the hero paints
+     immediately on first load, before main.js has run and before
+     /api/hero has responded. main.js overrides --hero-image with the
+     admin-uploaded banner (or re-applies this same default) once its
+     fetch resolves — see renderHeroImage() in js/render.js. This is what
+     was causing the hero to appear blank on slower mobile connections:
+     it had NO image until JS finished a chain of network requests. */
+  background-image: var(--hero-image, url("../images/hero-banner.webp"));
   background-size: cover;
   background-position: center right;
   background-repeat: no-repeat;

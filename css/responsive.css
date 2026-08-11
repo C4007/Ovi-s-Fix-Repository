@@ -88,6 +88,20 @@
     padding: 14px 4px;
   }
 
+  .top-ticker {
+    /* Overflow guard: on very narrow screens the doubled marquee track can
+       occasionally paint 1px wider than the viewport and force a
+       horizontal scrollbar. The bar already masks its edges, so clip it. */
+    overflow: hidden;
+  }
+
+  .hero-ticker-track {
+    gap: 12px;
+    /* Fewer items fit per screen on mobile, so a shorter loop keeps the
+       scroll speed feeling consistent instead of dragging. */
+    animation-duration: 18s;
+  }
+
   .hero-ticker-item {
     font-size: 0.68rem;
   }

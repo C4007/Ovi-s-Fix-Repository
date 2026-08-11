@@ -381,9 +381,12 @@ export function renderStats() {
    Render everything present on the current page
    --------------------------------------------------------------------------- */
 export async function renderAll() {
-  const svc = await loadServices();
-  const ticker = await loadTicker();
-  const heroImage = await loadHeroImage();
+  // Fetched in parallel (not sequentially awaited) — the hero image and
+  // ticker have nothing to do with services data, so there's no reason
+  // to make them wait behind it. On a slow mobile connection the old
+  // sequential chain (services -> ticker -> hero) meant the hero banner
+  // could stay blank for the combined time of all three requests.
+  const [svc, ticker, heroImage] = await Promise.all([loadServices(), loadTicker(), loadHeroImage()]);
   renderStats();
   renderTicker(ticker);
   renderHeroImage(heroImage);
