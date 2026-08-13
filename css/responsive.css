@@ -1,0 +1,158 @@
+/* ==========================================================================
+   Ovi's Fix — responsive breakpoints
+   ========================================================================== */
+
+/* ---- Tablet ---- */
+@media (max-width: 980px) {
+  .contact-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .footer-grid {
+    grid-template-columns: 1fr 1fr;
+  }
+}
+
+/* ---- Nav switches to hamburger + popover ----
+   Raised from 860px to 940px: two more nav items (PC Builder, Terms)
+   were added, so the full-width link row now needs more room before it
+   gets cramped against the logo/actions. */
+@media (max-width: 940px) {
+  .nav-links {
+    display: none;
+  }
+
+  .navbar-actions .btn-primary.nav-cta-desktop {
+    display: none;
+  }
+
+  .hamburger {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+  }
+}
+
+@media (min-width: 941px) {
+  .mobile-menu,
+  .mobile-menu-scrim {
+    display: none;
+  }
+}
+
+/* ---- Mobile ---- */
+@media (max-width: 640px) {
+  :root {
+    --nav-height: 68px;
+    --ticker-bar-height: 32px;
+  }
+
+  .container {
+    padding: 0 18px;
+  }
+
+  .section {
+    padding: 64px 0;
+  }
+
+  .section-head {
+    margin-bottom: 36px;
+  }
+
+  .hero {
+    padding: calc(var(--nav-height) + var(--ticker-bar-height) + 32px) 0 64px;
+    min-height: auto;
+    background-position: 70% center;
+  }
+
+  .hero-title {
+    font-size: clamp(1.9rem, 8.5vw, 2.6rem);
+  }
+
+  .hero-cta {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .hero-cta .btn {
+    width: 100%;
+  }
+
+  .hero-stats {
+    grid-template-columns: repeat(2, 1fr);
+    gap: 10px 8px;
+  }
+
+  .hero-stat-value {
+    font-size: 1.6rem;
+  }
+
+  .hero-stat-card {
+    padding: 14px 4px;
+  }
+
+  .top-ticker {
+    /* Overflow guard: on very narrow screens the doubled marquee track can
+       occasionally paint 1px wider than the viewport and force a
+       horizontal scrollbar. The bar already masks its edges, so clip it. */
+    overflow: hidden;
+  }
+
+  .hero-ticker-track {
+    gap: 12px;
+    /* Fewer items fit per screen on mobile, so a shorter loop keeps the
+       scroll speed feeling consistent instead of dragging. */
+    animation-duration: 18s;
+  }
+
+  .hero-ticker-item {
+    font-size: 0.68rem;
+  }
+
+  .services-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .whyus-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .form-row {
+    grid-template-columns: 1fr;
+  }
+
+  .footer-grid {
+    grid-template-columns: 1fr;
+    gap: 32px;
+  }
+
+  .footer-bottom {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 8px;
+  }
+
+  .comparison-table {
+    min-width: 560px;
+  }
+
+  /* Mobile popover: full-bleed with tighter padding, definitely acrylic
+     (near-opaque) so it never blends into whatever is scrolled behind it. */
+  .mobile-menu {
+    top: 8px;
+    left: 8px;
+    right: 8px;
+    padding: 16px;
+  }
+
+  .mobile-menu-links a {
+    font-size: 13px;
+    padding: 14px 12px;
+  }
+}
+
+@media (max-width: 380px) {
+  .hero-stats {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}

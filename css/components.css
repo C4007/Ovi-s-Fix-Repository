@@ -1,0 +1,1404 @@
+/* ==========================================================================
+   Ovi's Fix — components
+   ========================================================================== */
+
+/* ---------------------------------------------------------------------------
+   Glass & acrylic surfaces
+   --------------------------------------------------------------------------- */
+.glass {
+  background: var(--glass-bg);
+  backdrop-filter: blur(18px) saturate(160%);
+  -webkit-backdrop-filter: blur(18px) saturate(160%);
+  border: 1px solid var(--glass-border);
+  box-shadow: var(--glass-shadow);
+}
+
+.glass-strong {
+  background: var(--glass-bg-strong);
+  backdrop-filter: blur(22px) saturate(180%);
+  -webkit-backdrop-filter: blur(22px) saturate(180%);
+  border: 1px solid var(--glass-border);
+}
+
+/* Acrylic = near-opaque frosted surface, used only where glass would overlap
+   and hurt legibility (mobile nav popover). More body, same family. */
+.acrylic {
+  background: var(--acrylic-bg);
+  backdrop-filter: blur(26px) saturate(140%);
+  -webkit-backdrop-filter: blur(26px) saturate(140%);
+  border: 1px solid var(--border-soft);
+}
+
+/* ---------------------------------------------------------------------------
+   Buttons
+   --------------------------------------------------------------------------- */
+.btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  padding: 13px 26px;
+  border-radius: var(--radius-pill);
+  font-size: var(--fs-nav);
+  font-weight: 600;
+  border: 1px solid transparent;
+  transition: transform var(--t-fast) var(--ease-out), box-shadow var(--t-fast) var(--ease-out),
+    background-color var(--t-fast) var(--ease-out), color var(--t-fast) var(--ease-out);
+  white-space: nowrap;
+}
+
+.btn:active {
+  transform: scale(0.97);
+}
+
+.btn-primary {
+  background: linear-gradient(135deg, var(--signal-red), var(--signal-red-strong));
+  color: #fff;
+  box-shadow: 0 10px 26px rgba(228, 52, 47, 0.32);
+}
+
+.btn-primary:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 14px 32px rgba(228, 52, 47, 0.4);
+}
+
+.btn-secondary {
+  background: var(--glass-bg-strong);
+  backdrop-filter: blur(14px);
+  -webkit-backdrop-filter: blur(14px);
+  border-color: var(--border-strong);
+  color: var(--text-heading);
+}
+
+.btn-secondary:hover {
+  transform: translateY(-2px);
+  border-color: var(--circuit-blue);
+}
+
+.btn-block {
+  width: 100%;
+}
+
+/* ---------------------------------------------------------------------------
+   Icon buttons (theme / language toggle, hamburger)
+   --------------------------------------------------------------------------- */
+.icon-btn {
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  background: var(--glass-bg-strong);
+  border: 1px solid var(--border-soft);
+  color: var(--text-heading);
+  transition: transform var(--t-fast) var(--ease-out), border-color var(--t-fast) var(--ease-out);
+  flex-shrink: 0;
+}
+
+.icon-btn:hover {
+  transform: translateY(-1px);
+  border-color: var(--circuit-blue);
+}
+
+.icon-btn svg {
+  width: 18px;
+  height: 18px;
+}
+
+.lang-toggle-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: auto;
+  height: auto;
+  padding: 3px;
+  background: transparent;
+  border: none;
+  border-radius: 5px;
+  flex-shrink: 0;
+  transition: transform var(--t-fast) var(--ease-out), background-color var(--t-fast) var(--ease-out);
+}
+
+.lang-toggle-btn:hover {
+  transform: translateY(-1px);
+  background: var(--glass-bg);
+}
+
+.lang-toggle-btn svg {
+  display: block;
+  width: 24px;
+  height: 16px;
+  border-radius: 3px;
+  box-shadow: 0 0 0 1px var(--border-soft);
+}
+
+.lang-toggle-btn .flag-bd {
+  display: none;
+}
+
+:root[data-lang="bn"] .lang-toggle-btn .flag-bd {
+  display: block;
+}
+
+:root[data-lang="bn"] .lang-toggle-btn .flag-us {
+  display: none;
+}
+
+/* sun/moon swap by theme */
+.icon-moon { display: none; }
+:root[data-theme="dark"] .icon-moon { display: block; }
+:root[data-theme="dark"] .icon-sun { display: none; }
+
+/* ---------------------------------------------------------------------------
+   Navbar
+   --------------------------------------------------------------------------- */
+.top-ticker {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  z-index: 110;
+  height: var(--ticker-bar-height);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+  /* Glass panel matching the navbar directly beneath it (was a flat solid
+     --ink-navy fill). --ticker-bg / --glass-blur are theme-aware tokens
+     from variables.css, overridable per-theme from Admin → Appearance. */
+  background: var(--ticker-bg);
+  backdrop-filter: blur(var(--glass-blur)) saturate(160%);
+  -webkit-backdrop-filter: blur(var(--glass-blur)) saturate(160%);
+  border-bottom: 1px solid var(--border-soft);
+  -webkit-mask-image: linear-gradient(90deg, transparent, #000 4%, #000 96%, transparent);
+  mask-image: linear-gradient(90deg, transparent, #000 4%, #000 96%, transparent);
+}
+
+.navbar {
+  position: fixed;
+  top: var(--ticker-bar-height);
+  left: 0;
+  right: 0;
+  z-index: 100;
+  height: var(--nav-height);
+  background: var(--nav-bg);
+  backdrop-filter: blur(var(--glass-blur)) saturate(160%);
+  -webkit-backdrop-filter: blur(var(--glass-blur)) saturate(160%);
+  border-bottom: 1px solid transparent;
+  transition: background-color var(--t-med) var(--ease-out), border-color var(--t-med) var(--ease-out);
+}
+
+.navbar.scrolled {
+  background: var(--nav-bg-scrolled);
+  border-bottom-color: var(--border-soft);
+}
+
+.navbar-inner {
+  height: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+}
+
+.brand {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.brand-mark {
+  width: 46px;
+  height: 46px;
+  border-radius: 12px;
+  background: #fff;
+  padding: 5px;
+  box-shadow: 0 4px 14px rgba(11, 27, 51, 0.18);
+  flex-shrink: 0;
+}
+
+.brand-mark img {
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+}
+
+.brand-name {
+  /* Deliberately NOT var(--font-display) — that swaps with language, and a
+     brand wordmark should never change typeface. Montserrat, always. */
+  font-family: "Montserrat", sans-serif;
+  font-weight: 800;
+  font-size: 1.3rem;
+  color: var(--text-heading);
+  letter-spacing: -0.01em;
+}
+
+.brand-name span {
+  color: var(--signal-red);
+}
+
+.nav-links {
+  display: flex;
+  align-items: center;
+  gap: 22px;
+}
+
+.nav-links a {
+  font-size: var(--fs-nav);
+  font-weight: 500;
+  color: var(--text-body);
+  position: relative;
+  padding: 6px 0;
+  transition: color var(--t-fast) var(--ease-out);
+}
+
+.nav-links a::after {
+  content: "";
+  position: absolute;
+  left: 0;
+  bottom: 0;
+  width: 0;
+  height: 2px;
+  background: var(--signal-red);
+  transition: width var(--t-fast) var(--ease-out);
+}
+
+.nav-links a:hover {
+  color: var(--text-heading);
+}
+
+.nav-links a:hover::after {
+  width: 100%;
+}
+
+.navbar-actions {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.hamburger {
+  display: none;
+}
+
+.hamburger span {
+  display: block;
+  width: 16px;
+  height: 2px;
+  background: currentColor;
+  border-radius: 2px;
+  position: relative;
+  transition: transform var(--t-fast) var(--ease-out), opacity var(--t-fast) var(--ease-out);
+}
+
+.hamburger span::before,
+.hamburger span::after {
+  content: "";
+  position: absolute;
+  left: 0;
+  width: 16px;
+  height: 2px;
+  background: currentColor;
+  border-radius: 2px;
+  transition: transform var(--t-fast) var(--ease-out);
+}
+
+.hamburger span::before { top: -5px; }
+.hamburger span::after { top: 5px; }
+
+.hamburger.is-open span { background: transparent; }
+.hamburger.is-open span::before { transform: translateY(5px) rotate(45deg); }
+.hamburger.is-open span::after { transform: translateY(-5px) rotate(-45deg); }
+
+/* Mobile popover menu — see responsive.css for the media-query trigger.
+   Uses .acrylic (near-opaque) rather than .glass, exactly to avoid the
+   "glass overlaps background and becomes unreadable" problem on small
+   screens. */
+.mobile-menu-scrim {
+  position: fixed;
+  inset: 0;
+  background: var(--scrim);
+  opacity: 0;
+  visibility: hidden;
+  transition: opacity var(--t-med) var(--ease-out), visibility var(--t-med) var(--ease-out);
+  /* Must sit above .top-ticker (110) and .navbar (100), not just below
+     them — otherwise the fixed ticker bar visibly stays "on top" while
+     the mobile menu is open instead of being dimmed by the scrim underneath it. */
+  z-index: 111;
+}
+
+.mobile-menu-scrim.is-open {
+  opacity: 1;
+  visibility: visible;
+}
+
+.mobile-menu {
+  position: fixed;
+  top: 12px;
+  right: 12px;
+  left: 12px;
+  z-index: 112;
+  border-radius: var(--radius-lg);
+  padding: 18px;
+  transform: translateY(-14px) scale(0.98);
+  opacity: 0;
+  visibility: hidden;
+  transition: transform var(--t-med) var(--ease-spring), opacity var(--t-med) var(--ease-out),
+    visibility var(--t-med) var(--ease-out);
+  box-shadow: var(--glass-shadow);
+}
+
+.mobile-menu.is-open {
+  transform: translateY(calc(var(--nav-height) + var(--ticker-bar-height) - 4px)) scale(1);
+  opacity: 1;
+  visibility: visible;
+}
+
+.mobile-menu-links {
+  display: flex;
+  flex-direction: column;
+}
+
+.mobile-menu-links a {
+  padding: 13px 10px;
+  font-size: 13px;
+  font-weight: 500;
+  color: var(--text-body-key);
+  border-bottom: 1px solid var(--border-soft);
+}
+
+.mobile-menu-links a:last-child {
+  border-bottom: none;
+}
+
+.mobile-menu-cta {
+  margin-top: 14px;
+}
+
+/* ---------------------------------------------------------------------------
+   Hero
+   --------------------------------------------------------------------------- */
+.hero {
+  position: relative;
+  padding: calc(var(--nav-height) + var(--ticker-bar-height) + 64px) 0 90px;
+  overflow: hidden;
+  min-height: 620px;
+  display: flex;
+  align-items: center;
+  background-color: #050608;
+  /* Bundled default banner is the CSS-level fallback so the hero paints
+     immediately on first load, before main.js has run and before
+     /api/hero has responded. main.js overrides --hero-image with the
+     admin-uploaded banner (or re-applies this same default) once its
+     fetch resolves — see renderHeroImage() in js/render.js. This is what
+     was causing the hero to appear blank on slower mobile connections:
+     it had NO image until JS finished a chain of network requests. */
+  background-image: var(--hero-image, url("../images/hero-banner.webp"));
+  background-size: cover;
+  background-position: center right;
+  background-repeat: no-repeat;
+}
+
+/* .container is normally a plain block (width:auto -> fills its parent,
+   capped at max-width, centered via margin:auto) — that's how the navbar
+   gets its logo flush against the left edge. But here .container is a
+   direct child of .hero, which is display:flex. As a flex item, a block
+   with no explicit width sizes to its CONTENT instead of filling the row
+   (.hero-content caps out at 620px), and the margin:0 auto on .container
+   then centers that now-narrow box inside .hero's free space. Net effect:
+   the hero text was rendering centered under the image instead of flush
+   left under the navbar logo. Forcing the container back to full width
+   here restores normal left-aligned block behavior, matching the navbar. */
+.hero > .container {
+  width: 100%;
+}
+
+/* The hero always sits on its banner image regardless of the site's
+   light/dark toggle — a fixed dark scrim keeps text legible either way,
+   and the text colors below are intentionally hardcoded rather than
+   theme-variable for the same reason. */
+.hero-scrim {
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+  background: linear-gradient(
+    90deg,
+    rgba(2, 3, 6, 0.94) 0%,
+    rgba(2, 3, 6, 0.8) 32%,
+    rgba(2, 3, 6, 0.4) 58%,
+    rgba(2, 3, 6, 0.08) 100%
+  );
+  pointer-events: none;
+}
+
+.hero-glow {
+  position: absolute;
+  top: -20%;
+  right: -10%;
+  width: 60vw;
+  height: 60vw;
+  max-width: 700px;
+  max-height: 700px;
+  background: radial-gradient(circle, rgba(47, 111, 237, 0.16), transparent 70%);
+  pointer-events: none;
+  z-index: 0;
+}
+
+.hero-content {
+  position: relative;
+  z-index: 1;
+  max-width: 620px;
+}
+
+.hero-content .eyebrow {
+  color: var(--signal-red);
+}
+
+.hero-title {
+  font-family: "Montserrat", var(--font-display);
+  font-weight: 800;
+  font-size: var(--fs-h1);
+  color: #ffffff;
+  margin-top: 6px;
+}
+
+.hero-title span {
+  white-space: nowrap;
+}
+
+.hero-title .accent {
+  background: linear-gradient(100deg, var(--signal-red) 10%, var(--circuit-blue) 90%);
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+}
+
+.hero-sub {
+  margin-top: 22px;
+  max-width: 46ch;
+  color: rgba(255, 255, 255, 0.78);
+  font-size: 0.95rem;
+  line-height: 1.75;
+}
+
+.hero-cta {
+  display: flex;
+  gap: 14px;
+  margin-top: 34px;
+  flex-wrap: wrap;
+}
+
+.hero-stats {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 14px;
+  margin-top: 52px;
+  padding-top: 30px;
+  border-top: 1px solid rgba(255, 255, 255, 0.16);
+}
+
+.hero-stat-card {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  gap: 10px;
+  padding: 16px 6px;
+  border-radius: var(--radius-md);
+  transition: transform var(--t-fast) var(--ease-out), background-color var(--t-fast) var(--ease-out);
+}
+
+.hero-stat-card:hover {
+  transform: translateY(-4px);
+  background: rgba(255, 255, 255, 0.08);
+}
+
+.hero-stat-icon {
+  width: 36px;
+  height: 36px;
+  border-radius: 11px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: linear-gradient(135deg, var(--signal-red), var(--circuit-blue));
+  color: #fff;
+  flex-shrink: 0;
+}
+
+.hero-stat-icon svg {
+  width: 17px;
+  height: 17px;
+}
+
+.hero-stat-value {
+  font-family: "Montserrat", var(--font-body);
+  font-size: 2.1rem;
+  font-weight: 800;
+  color: #ffffff;
+  line-height: 1;
+  font-variant-numeric: tabular-nums;
+}
+
+.hero-stat-value.is-free {
+  color: var(--success);
+}
+
+.hero-stat-value.is-free.pop-in {
+  animation: stat-pop-in 560ms var(--ease-spring);
+}
+
+@keyframes stat-pop-in {
+  0% { opacity: 0; transform: scale(0.5); }
+  100% { opacity: 1; transform: scale(1); }
+}
+
+.hero-stat-label {
+  font-size: 11px;
+  color: rgba(255, 255, 255, 0.6);
+  max-width: 13ch;
+}
+
+/* ---- Hero ticker: scrolling "heading lines", admin-editable — lives in
+   the fixed .top-ticker bar, not inside the hero anymore (see below) ---- */
+
+.hero-ticker-track {
+  display: inline-flex;
+  align-items: center;
+  gap: 18px;
+  white-space: nowrap;
+  animation: ticker-scroll 26s linear infinite;
+  will-change: transform;
+  margin: 0 auto;
+}
+
+.hero-ticker-item {
+  font-family: "Montserrat", var(--font-body);
+  font-weight: 600;
+  font-size: 0.75rem;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+  /* Was a hardcoded #ffffff, which worked when the ticker bar was always
+     a solid dark navy. Now that the bar is theme-aware glass (can be
+     near-white in light mode), the text needs to follow the theme too. */
+  color: var(--text-heading);
+}
+
+.hero-ticker-sep {
+  color: var(--signal-red);
+  font-size: 0.7rem;
+}
+
+@keyframes ticker-scroll {
+  from { transform: translateX(0); }
+  to { transform: translateX(-50%); }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .hero-ticker-track {
+    animation: none;
+  }
+}
+
+.scroll-indicator {
+  position: absolute;
+  bottom: 18px;
+  left: 50%;
+  transform: translateX(-50%);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
+  font-family: "Montserrat", var(--font-body);
+  font-weight: 400;
+  font-size: 10px;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--text-muted);
+  z-index: 1;
+}
+
+.scroll-indicator-line {
+  width: 1px;
+  height: 34px;
+  background: linear-gradient(var(--text-muted), transparent);
+  overflow: hidden;
+  position: relative;
+}
+
+.scroll-indicator-line::after {
+  content: "";
+  position: absolute;
+  top: -100%;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: var(--signal-red);
+  animation: scroll-line 1.8s infinite;
+}
+
+/* ---------------------------------------------------------------------------
+   Services grid + the "ticket" price treatment (signature element)
+   --------------------------------------------------------------------------- */
+.services-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+  gap: 22px;
+}
+
+.service-card {
+  border-radius: var(--radius-md);
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+  transition: transform var(--t-med) var(--ease-out), box-shadow var(--t-med) var(--ease-out);
+}
+
+.service-card:hover {
+  transform: translateY(-6px);
+  box-shadow: var(--shadow-card-hover);
+}
+
+.service-card-image {
+  aspect-ratio: 16 / 10;
+  overflow: hidden;
+  background: var(--bg-alt);
+}
+
+.service-card-image img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  transition: transform var(--t-slow) var(--ease-out);
+}
+
+.service-card:hover .service-card-image img {
+  transform: scale(1.08);
+}
+
+.service-card-body {
+  padding: 20px 20px 18px;
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+}
+
+.service-card-title {
+  font-size: var(--fs-h3);
+  color: var(--text-body-key);
+}
+
+.service-card-desc {
+  margin-top: 8px;
+  font-size: var(--fs-body-sm);
+  color: var(--text-body-key);
+  opacity: 0.82;
+  line-height: 1.65;
+  flex: 1;
+}
+
+.service-card-footer {
+  margin-top: 18px;
+  padding-top: 16px;
+  border-top: 1px dashed var(--border-strong);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+}
+
+.price-ticket {
+  display: flex;
+  align-items: baseline;
+  gap: 4px;
+  font-family: var(--font-mono);
+}
+
+.price-ticket .currency {
+  font-size: 12px;
+  color: var(--text-muted);
+}
+
+.price-ticket .amount {
+  font-size: var(--fs-price);
+  font-weight: 700;
+  color: var(--text-heading);
+}
+
+.price-ticket.is-free .amount {
+  color: var(--success);
+}
+
+.price-ticket .unit {
+  font-size: 10px;
+  color: var(--text-muted);
+  margin-left: 2px;
+}
+
+.service-card-cta {
+  width: 38px;
+  height: 38px;
+  border-radius: 50%;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  background: var(--ink-navy);
+  color: #fff;
+  flex-shrink: 0;
+  transition: background-color var(--t-fast) var(--ease-out), transform var(--t-fast) var(--ease-out);
+}
+
+.service-card-cta:hover {
+  background: var(--signal-red);
+  transform: rotate(45deg);
+}
+
+.service-card-cta svg {
+  width: 16px;
+  height: 16px;
+}
+
+/* free diagnostic report — icon-based hero card instead of a photo */
+.service-card.is-free .service-card-image {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: linear-gradient(135deg, var(--ink-navy), #17284a);
+  aspect-ratio: 16 / 10;
+}
+
+:root[data-theme="dark"] .service-card.is-free .service-card-image {
+  background: linear-gradient(135deg, #0f1729, #1a2540);
+}
+
+.service-card.is-free .service-card-image svg {
+  width: 56px;
+  height: 56px;
+  color: var(--success);
+}
+
+/* ---------------------------------------------------------------------------
+   Comparison table
+   --------------------------------------------------------------------------- */
+.comparison-wrap {
+  border-radius: var(--radius-lg);
+  padding: 8px;
+  overflow-x: auto;
+}
+
+.comparison-table {
+  width: 100%;
+  border-collapse: collapse;
+  min-width: 640px;
+}
+
+.comparison-table th {
+  text-align: left;
+  font-family: "Montserrat", var(--font-body);
+  font-size: 10.5px;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--text-muted);
+  font-weight: 600;
+  padding: 18px 20px 14px;
+}
+
+.comparison-table th:last-child,
+.comparison-table td:last-child {
+  text-align: right;
+}
+
+.comparison-table td {
+  padding: 16px 20px;
+  border-top: 1px solid var(--border-soft);
+  font-size: var(--fs-body);
+  vertical-align: middle;
+}
+
+.comparison-table tr:hover td {
+  background: var(--glass-bg);
+}
+
+.cmp-service {
+  font-weight: 600;
+  color: var(--text-body-key);
+}
+
+.cmp-market {
+  color: var(--text-muted);
+  text-decoration: line-through;
+  font-family: var(--font-mono);
+}
+
+.cmp-ovi {
+  font-family: var(--font-mono);
+  font-weight: 700;
+  color: var(--signal-red);
+  font-size: 1rem;
+}
+
+.save-badge {
+  display: inline-flex;
+  align-items: center;
+  padding: 5px 12px;
+  border-radius: var(--radius-pill);
+  background: var(--success-bg);
+  color: var(--success);
+  font-family: var(--font-mono);
+  font-weight: 700;
+  font-size: 12px;
+}
+
+.comparison-footnote {
+  margin-top: 18px;
+  font-size: 11px;
+  color: var(--text-muted);
+  max-width: 70ch;
+}
+
+/* ---------------------------------------------------------------------------
+   Why us
+   --------------------------------------------------------------------------- */
+.whyus-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+  gap: 20px;
+}
+
+.whyus-card {
+  padding: 26px 22px;
+  border-radius: var(--radius-md);
+}
+
+.whyus-icon {
+  width: 44px;
+  height: 44px;
+  border-radius: 12px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: linear-gradient(135deg, var(--signal-red), var(--circuit-blue));
+  color: #fff;
+  margin-bottom: 16px;
+}
+
+.whyus-icon svg {
+  width: 22px;
+  height: 22px;
+}
+
+.whyus-card h3 {
+  font-size: 0.95rem;
+  color: var(--text-body-key);
+}
+
+.whyus-card p {
+  margin-top: 8px;
+  font-size: var(--fs-body-sm);
+  color: var(--text-muted);
+  line-height: 1.65;
+}
+
+/* ---------------------------------------------------------------------------
+   PC Configurator preview (Expert Mode / Pre-configured Mode)
+   --------------------------------------------------------------------------- */
+.configurator-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(340px, 1fr));
+  gap: 24px;
+}
+
+.mode-card {
+  border-radius: var(--radius-lg);
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+}
+
+.mode-card-image {
+  position: relative;
+  aspect-ratio: 4 / 3;
+  overflow: hidden;
+  background: var(--bg-alt);
+}
+
+.mode-card-image img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  object-position: 50% 50%;
+}
+
+/* This image's baked-in "Design Your Perfect Gaming PC" text sits near the
+   top of the source photo. A centered crop (default 50% 50% above) trims
+   into that headline. Lowering the Y value shifts the crop window UP the
+   source image, leaving more breathing room above the text and trimming
+   more from the (less important) bottom instead.
+   Tune by feel: 0% = no crop off the top at all, 50% = centered. */
+.mode-card-image[data-mode="preconfigured"] img {
+  object-position: 50% 12%;
+}
+
+.mode-badge {
+  position: absolute;
+  top: 14px;
+  right: 14px;
+  padding: 7px 13px;
+  border-radius: var(--radius-pill);
+  background: var(--ink-navy);
+  color: #fff;
+  font-family: "Montserrat", var(--font-body);
+  font-size: 10.5px;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  box-shadow: 0 6px 16px rgba(0, 0, 0, 0.25);
+}
+
+.mode-card-body {
+  padding: 26px 26px 30px;
+}
+
+.mode-card-body h3 {
+  font-size: 1.05rem;
+  color: var(--text-body-key);
+  line-height: 1.35;
+}
+
+.mode-intro,
+.mode-closing {
+  margin-top: 12px;
+  font-size: var(--fs-body-sm);
+  color: var(--text-body-key);
+  opacity: 0.82;
+  line-height: 1.7;
+}
+
+.mode-steps-label {
+  margin-top: 20px;
+  font-family: "Montserrat", var(--font-body);
+  font-size: 10.5px;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--circuit-blue);
+  font-weight: 700;
+}
+
+.mode-steps {
+  margin-top: 12px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.mode-steps li {
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+  font-size: var(--fs-body-sm);
+  color: var(--text-body-key);
+  line-height: 1.55;
+}
+
+.mode-steps li svg {
+  width: 17px;
+  height: 17px;
+  color: var(--success);
+  flex-shrink: 0;
+  margin-top: 1px;
+}
+
+.configurator-statement {
+  margin-top: 40px;
+  padding: 30px 24px;
+  border-radius: var(--radius-lg);
+  text-align: center;
+}
+
+.configurator-statement p {
+  font-family: var(--font-display);
+  font-weight: 700;
+  font-size: clamp(1.15rem, 3.2vw, 1.7rem);
+  background: linear-gradient(100deg, var(--signal-red) 10%, var(--circuit-blue) 90%);
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+}
+
+/* ---------------------------------------------------------------------------
+   FAQ accordion
+   --------------------------------------------------------------------------- */
+.faq-list {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  max-width: 780px;
+}
+
+.faq-item {
+  border-radius: var(--radius-md);
+  overflow: hidden;
+}
+
+.faq-question {
+  width: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  padding: 18px 22px;
+  background: transparent;
+  border: none;
+  text-align: left;
+  color: var(--text-body-key);
+  font-weight: 600;
+  font-size: 0.9rem;
+}
+
+.faq-icon {
+  width: 26px;
+  height: 26px;
+  border-radius: 50%;
+  background: var(--glass-bg-strong);
+  border: 1px solid var(--border-soft);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  transition: transform var(--t-med) var(--ease-out);
+}
+
+.faq-item[data-open="true"] .faq-icon {
+  transform: rotate(45deg);
+  background: var(--signal-red);
+  border-color: var(--signal-red);
+  color: #fff;
+}
+
+.faq-answer {
+  display: grid;
+  grid-template-rows: 0fr;
+  transition: grid-template-rows var(--t-med) var(--ease-out);
+}
+
+.faq-item[data-open="true"] .faq-answer {
+  grid-template-rows: 1fr;
+}
+
+.faq-answer-inner {
+  overflow: hidden;
+}
+
+.faq-answer p {
+  padding: 0 22px 20px;
+  font-size: var(--fs-body-sm);
+  color: var(--text-body-key);
+  opacity: 0.85;
+  line-height: 1.7;
+  max-width: 62ch;
+}
+
+/* ---------------------------------------------------------------------------
+   Contact
+   --------------------------------------------------------------------------- */
+.contact-grid {
+  display: grid;
+  grid-template-columns: 1.2fr 0.8fr;
+  gap: 24px;
+  align-items: start;
+}
+
+.contact-form-card {
+  padding: 32px;
+  border-radius: var(--radius-lg);
+}
+
+.form-row {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 16px;
+}
+
+.form-group {
+  margin-bottom: 18px;
+}
+
+.form-label {
+  display: block;
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  color: var(--text-muted);
+  margin-bottom: 8px;
+}
+
+.form-input,
+.form-textarea {
+  width: 100%;
+  padding: 13px 16px;
+  border-radius: var(--radius-sm);
+  border: 1px solid var(--border-soft);
+  background: var(--surface);
+  transition: border-color var(--t-fast) var(--ease-out);
+}
+
+.form-input:focus,
+.form-textarea:focus {
+  border-color: var(--circuit-blue);
+}
+
+.form-textarea {
+  resize: vertical;
+  min-height: 120px;
+}
+
+.form-honeypot {
+  position: absolute;
+  left: -9999px;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+}
+
+.form-status {
+  margin-top: 14px;
+  font-size: 12.5px;
+  padding: 10px 14px;
+  border-radius: var(--radius-sm);
+  display: none;
+}
+
+.form-status.is-visible {
+  display: block;
+}
+
+.form-status.is-success {
+  background: var(--success-bg);
+  color: var(--success);
+}
+
+.form-status.is-error {
+  background: rgba(228, 52, 47, 0.12);
+  color: var(--signal-red);
+}
+
+.contact-side {
+  display: flex;
+  flex-direction: column;
+  gap: 18px;
+}
+
+.contact-info-card,
+.social-card {
+  padding: 26px;
+  border-radius: var(--radius-lg);
+}
+
+.contact-info-card h3,
+.social-card h3 {
+  font-size: 0.85rem;
+  color: var(--text-body-key);
+  margin-bottom: 16px;
+}
+
+.contact-info-row {
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
+  margin-bottom: 16px;
+}
+
+.contact-info-row:last-child {
+  margin-bottom: 0;
+}
+
+.contact-info-icon {
+  width: 34px;
+  height: 34px;
+  border-radius: 10px;
+  background: var(--glass-bg-strong);
+  border: 1px solid var(--border-soft);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  color: var(--circuit-blue);
+}
+
+.contact-info-icon svg {
+  width: 16px;
+  height: 16px;
+}
+
+.contact-info-icon img {
+  width: 16px;
+  height: 16px;
+  object-fit: contain;
+}
+
+.contact-info-text .label {
+  font-size: 10.5px;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  color: var(--text-muted);
+}
+
+.contact-info-text .value {
+  font-size: 13px;
+  color: var(--text-body-key);
+  font-weight: 500;
+  margin-top: 2px;
+  word-break: break-word;
+}
+
+.social-grid {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+}
+
+.social-pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 10px 16px;
+  border-radius: var(--radius-pill);
+  background: var(--glass-bg-strong);
+  border: 1px solid var(--border-soft);
+  font-size: 12.5px;
+  font-weight: 500;
+  color: var(--text-body-key);
+  transition: transform var(--t-fast) var(--ease-out), border-color var(--t-fast) var(--ease-out), color var(--t-fast) var(--ease-out);
+}
+
+.social-pill:hover {
+  transform: translateY(-2px);
+  border-color: var(--circuit-blue);
+  color: var(--circuit-blue);
+}
+
+.social-pill.whatsapp:hover {
+  border-color: var(--success);
+  color: var(--success);
+}
+
+.social-pill svg {
+  width: 15px;
+  height: 15px;
+}
+
+/* ---------------------------------------------------------------------------
+   Footer
+   --------------------------------------------------------------------------- */
+.footer {
+  padding: 64px 0 0;
+  border-top: 1px solid var(--border-soft);
+}
+
+.footer-grid {
+  display: grid;
+  grid-template-columns: 1.3fr 0.7fr 1fr;
+  gap: 40px;
+  padding-bottom: 48px;
+}
+
+.footer-brand .brand {
+  margin-bottom: 14px;
+}
+
+.footer-tagline {
+  font-size: var(--fs-body-sm);
+  color: var(--text-muted);
+  max-width: 34ch;
+}
+
+.footer-col h4 {
+  font-size: 11px;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: var(--text-muted);
+  margin-bottom: 16px;
+}
+
+.footer-col ul li {
+  margin-bottom: 10px;
+}
+
+.footer-col a {
+  font-size: 13px;
+  color: var(--text-body);
+  transition: color var(--t-fast) var(--ease-out);
+}
+
+.footer-col a:hover {
+  color: var(--signal-red);
+}
+
+.footer-social {
+  display: flex;
+  gap: 10px;
+  margin-top: 16px;
+}
+
+.footer-bottom {
+  border-top: 1px solid var(--border-soft);
+  padding: 20px 0;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  font-size: 11.5px;
+  color: var(--text-muted);
+  flex-wrap: wrap;
+}
+
+/* ---------------------------------------------------------------------------
+   Terms page
+   --------------------------------------------------------------------------- */
+.terms-list {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+  max-width: 820px;
+}
+
+.terms-item {
+  display: flex;
+  gap: 18px;
+  padding: 22px 24px;
+  border-radius: var(--radius-md);
+}
+
+.terms-index {
+  font-family: var(--font-mono);
+  font-weight: 700;
+  color: var(--signal-red);
+  font-size: 0.95rem;
+  flex-shrink: 0;
+}
+
+.terms-item p {
+  font-size: var(--fs-body);
+  color: var(--text-body-key);
+  line-height: 1.75;
+}
+
+/* ---------------------------------------------------------------------------
+   Bangla script has no letter-casing, and tracked-out letter-spacing breaks
+   conjunct/matra shaping — turn both off for every tracked-uppercase label
+   when Bangla is active (this is what was making red eyebrow/badge text
+   look oddly spaced out).
+   --------------------------------------------------------------------------- */
+:root[data-lang="bn"] .eyebrow,
+:root[data-lang="bn"] .comparison-table th,
+:root[data-lang="bn"] .form-label,
+:root[data-lang="bn"] .footer-col h4,
+:root[data-lang="bn"] .contact-info-text .label,
+:root[data-lang="bn"] .loader-text,
+:root[data-lang="bn"] .scroll-indicator,
+:root[data-lang="bn"] .mode-badge,
+:root[data-lang="bn"] .mode-steps-label {
+  letter-spacing: 0;
+  text-transform: none;
+}
