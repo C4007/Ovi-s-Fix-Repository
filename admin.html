@@ -86,6 +86,12 @@
       </div>
 
       <div id="admin-dashboard-view" style="display:none">
+        <div class="admin-tabs" role="tablist">
+          <button type="button" class="admin-tab-btn is-active" id="admin-tab-btn-content" data-tab="content">Content</button>
+          <button type="button" class="admin-tab-btn" id="admin-tab-btn-appearance" data-tab="appearance">Appearance</button>
+        </div>
+
+        <div id="admin-panel-content" class="admin-tab-panel">
         <div class="admin-dashboard-head">
           <div>
             <div class="eyebrow">Admin</div>
@@ -94,6 +100,10 @@
           </div>
         </div>
         <div class="form-status" id="hero-status" role="status"></div>
+        <div class="admin-preview-devicebar" data-preview-for="hero-preview-wrap">
+          <button type="button" class="device-btn is-active" data-device="desktop">Desktop</button>
+          <button type="button" class="device-btn" data-device="mobile">Mobile</button>
+        </div>
         <div class="admin-hero-preview glass" id="hero-preview-wrap">
           <img id="hero-preview-img" alt="Current hero banner preview">
         </div>
@@ -131,6 +141,142 @@
         </div>
         <div class="form-status" id="admin-save-status" role="status"></div>
         <div id="admin-services-list" class="admin-services-list"></div>
+        </div>
+
+        <div id="admin-panel-appearance" class="admin-tab-panel" style="display:none">
+
+          <div class="admin-appearance-banner glass">
+            Changes here preview instantly on this page as you edit (the ticker bar and navbar above are live). Nothing is public until you click <strong>Save Appearance</strong>.
+          </div>
+
+          <!-- Fonts -->
+          <div class="admin-dashboard-head">
+            <div>
+              <div class="eyebrow">Admin</div>
+              <h2>Fonts</h2>
+              <p class="section-sub">Pick from a curated set of web fonts, or upload your own (.woff2 / .woff / .ttf, under ~450KB).</p>
+            </div>
+          </div>
+          <div class="admin-form-grid">
+            <div class="form-group">
+              <label class="form-label" for="font-heading-select">Heading Font</label>
+              <select id="font-heading-select" class="form-input"></select>
+            </div>
+            <div class="form-group">
+              <label class="form-label" for="font-body-select">Body Font</label>
+              <select id="font-body-select" class="form-input"></select>
+            </div>
+          </div>
+          <div class="admin-upload-list" id="custom-fonts-list"></div>
+          <div class="admin-hero-upload">
+            <label class="btn btn-secondary" for="font-file-input">Upload Font&hellip;</label>
+            <input type="file" id="font-file-input" accept=".woff,.woff2,.ttf,.otf" style="display:none">
+          </div>
+          <div class="form-status" id="font-upload-status" role="status"></div>
+
+          <!-- Mode toggle shared by Colors + Glass -->
+          <div class="admin-dashboard-head" style="margin-top:52px">
+            <div>
+              <div class="eyebrow">Admin</div>
+              <h2>Colors &amp; Glass Effect</h2>
+              <p class="section-sub">Set independently for light and dark mode — visitors' devices decide which one they see.</p>
+            </div>
+            <div class="admin-dashboard-actions">
+              <div class="device-btn-group" id="appearance-mode-toggle">
+                <button type="button" class="device-btn is-active" data-mode="light">☀️ Light Mode</button>
+                <button type="button" class="device-btn" data-mode="dark">🌙 Dark Mode</button>
+              </div>
+            </div>
+          </div>
+
+          <div class="admin-form-grid">
+            <div class="form-group">
+              <label class="form-label" for="color-accent">Accent (buttons, price, "FIX")</label>
+              <div class="admin-color-input"><input type="color" id="color-accent-picker"><input type="text" id="color-accent" class="form-input" maxlength="7"></div>
+            </div>
+            <div class="form-group">
+              <label class="form-label" for="color-accent2">Accent 2 (links, icons)</label>
+              <div class="admin-color-input"><input type="color" id="color-accent2-picker"><input type="text" id="color-accent2" class="form-input" maxlength="7"></div>
+            </div>
+            <div class="form-group">
+              <label class="form-label" for="color-heading">Heading Text</label>
+              <div class="admin-color-input"><input type="color" id="color-heading-picker"><input type="text" id="color-heading" class="form-input" maxlength="7"></div>
+            </div>
+            <div class="form-group">
+              <label class="form-label" for="color-body">Body Text</label>
+              <div class="admin-color-input"><input type="color" id="color-body-picker"><input type="text" id="color-body" class="form-input" maxlength="7"></div>
+            </div>
+          </div>
+
+          <div class="admin-form-grid" style="margin-top:24px">
+            <div class="form-group">
+              <label class="form-label" for="glass-blur">Glass Blur Intensity — <span id="glass-blur-value">14px</span></label>
+              <input type="range" id="glass-blur" min="0" max="30" step="1">
+            </div>
+            <div class="form-group">
+              <label class="form-label">Glass Tint</label>
+              <div class="device-btn-group" id="glass-tint-toggle">
+                <button type="button" class="device-btn" data-tint="clear">Clear</button>
+                <button type="button" class="device-btn" data-tint="tinted">Tinted</button>
+              </div>
+            </div>
+          </div>
+
+          <!-- Background -->
+          <div class="admin-dashboard-head" style="margin-top:52px">
+            <div>
+              <div class="eyebrow">Admin</div>
+              <h2>Website Background</h2>
+              <p class="section-sub">Applies site-wide, behind every section (separate from the hero banner image above).</p>
+            </div>
+          </div>
+          <div class="device-btn-group" id="bg-type-toggle">
+            <button type="button" class="device-btn" data-bgtype="default">Default</button>
+            <button type="button" class="device-btn" data-bgtype="solid">Solid Color</button>
+            <button type="button" class="device-btn" data-bgtype="gradient">Gradient</button>
+            <button type="button" class="device-btn" data-bgtype="image">Image</button>
+          </div>
+
+          <div id="bg-solid-fields" class="admin-form-grid" style="margin-top:18px; display:none">
+            <div class="form-group">
+              <label class="form-label" for="bg-solid">Solid Color</label>
+              <div class="admin-color-input"><input type="color" id="bg-solid-picker"><input type="text" id="bg-solid" class="form-input" maxlength="7"></div>
+            </div>
+          </div>
+
+          <div id="bg-gradient-fields" class="admin-form-grid" style="margin-top:18px; display:none">
+            <div class="form-group">
+              <label class="form-label" for="bg-gradient-from">Gradient From</label>
+              <div class="admin-color-input"><input type="color" id="bg-gradient-from-picker"><input type="text" id="bg-gradient-from" class="form-input" maxlength="7"></div>
+            </div>
+            <div class="form-group">
+              <label class="form-label" for="bg-gradient-to">Gradient To</label>
+              <div class="admin-color-input"><input type="color" id="bg-gradient-to-picker"><input type="text" id="bg-gradient-to" class="form-input" maxlength="7"></div>
+            </div>
+            <div class="form-group full-width">
+              <label class="form-label" for="bg-gradient-angle">Angle — <span id="bg-gradient-angle-value">135°</span></label>
+              <input type="range" id="bg-gradient-angle" min="0" max="360" step="5">
+            </div>
+          </div>
+
+          <div id="bg-image-fields" style="margin-top:18px; display:none">
+            <div class="admin-preview-devicebar" data-preview-for="bg-image-preview-wrap">
+              <button type="button" class="device-btn is-active" data-device="desktop">Desktop</button>
+              <button type="button" class="device-btn" data-device="mobile">Mobile</button>
+            </div>
+            <div class="admin-hero-preview glass" id="bg-image-preview-wrap">
+              <img id="bg-image-preview-img" alt="Background image preview">
+            </div>
+            <div class="admin-hero-upload">
+              <label class="btn btn-secondary" for="bg-image-file-input">Choose Image&hellip;</label>
+              <input type="file" id="bg-image-file-input" accept="image/*" style="display:none">
+            </div>
+          </div>
+
+          <div class="form-status" id="appearance-status" role="status" style="margin-top:20px"></div>
+          <button type="button" class="btn btn-primary" id="appearance-save-btn" style="margin-top:6px">Save Appearance</button>
+
+        </div>
       </div>
 
     </div>
