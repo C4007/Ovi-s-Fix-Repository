@@ -62,7 +62,7 @@
   .hero {
     padding: calc(var(--nav-height) + var(--ticker-bar-height) + 32px) 0 64px;
     min-height: auto;
-    background-position: 70% center;
+    background-position: var(--hero-pos-x-mobile) center;
   }
 
   .hero-title {

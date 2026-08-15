@@ -44,6 +44,9 @@ export function applyTheme(theme) {
   document.documentElement.setAttribute("data-theme", theme);
   setStoredTheme(theme);
   updateToggleUI(theme);
+  // Lets other modules (hero image swap, adaptive glass text sampling)
+  // react live when the visitor flips the toggle, without a page reload.
+  document.dispatchEvent(new CustomEvent("ovisfix:themechange", { detail: { theme } }));
 }
 
 export function initTheme() {

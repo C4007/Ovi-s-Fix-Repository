@@ -26,7 +26,18 @@
   --font-display: "Montserrat", "Segoe UI", sans-serif;
   --font-body: "Montserrat", "Segoe UI", sans-serif;
   --font-mono: "IBM Plex Mono", "Courier New", monospace;
-  --font-bn: "Noto Sans Bengali", "Inter", sans-serif;
+  /* Default preserves the site's original Bengali stack (Kalpurush first,
+     falling back to the Google-loaded Noto Sans Bengali) — admin-editable
+     at Admin → Appearance → Bengali Font, sourced from fonts/manifest.json
+     plus this Google-loaded fallback, same pattern as the Latin fonts. */
+  --font-bn: "Kalpurush", "Noto Sans Bengali", "Inter", sans-serif;
+
+  /* Hero banner focal point — separate per device since a wide banner
+     crops very differently on a phone-width viewport than on desktop.
+     Admin → Appearance → Hero can override both (0% = left, 100% = right,
+     vertical stays centered). See css/responsive.css for the mobile swap. */
+  --hero-pos-x-desktop: 100%;
+  --hero-pos-x-mobile: 70%;
 
   /* ---- Layout ---- */
   --container: 1220px;
@@ -88,6 +99,16 @@
   --success: #1f8f5f;
   --success-bg: rgba(31, 143, 95, 0.12);
 
+  /* Hero scrim (dark-to-transparent overlay on the banner image) — much
+     lighter in light mode so the banner photo actually reads, since a
+     light UI sitting on top of a heavily-darkened image looked muddy.
+     Dark mode keeps its original, stronger values (see below) — the hero
+     was designed dark-first and that read is intentional there. */
+  --hero-scrim-1: rgba(2, 3, 6, 0.55);
+  --hero-scrim-2: rgba(2, 3, 6, 0.4);
+  --hero-scrim-3: rgba(2, 3, 6, 0.2);
+  --hero-scrim-4: rgba(2, 3, 6, 0.04);
+
   color-scheme: light;
 }
 
@@ -132,13 +153,23 @@
   --success: #3ddb96;
   --success-bg: rgba(61, 219, 150, 0.14);
 
+  /* Dark mode's original scrim — unchanged (see the lighter light-mode
+     values above for why the two now differ). */
+  --hero-scrim-1: rgba(2, 3, 6, 0.94);
+  --hero-scrim-2: rgba(2, 3, 6, 0.8);
+  --hero-scrim-3: rgba(2, 3, 6, 0.4);
+  --hero-scrim-4: rgba(2, 3, 6, 0.08);
+
   color-scheme: dark;
 }
 
 /* ---- Bangla type override ---- */
 :root[data-lang="bn"] {
-  --font-display: "Kalpurush", "Noto Sans Bengali", sans-serif;
-  --font-body: "Kalpurush", "Noto Sans Bengali", sans-serif;
+  /* --font-bn is admin-editable (Admin → Appearance → Bengali Font);
+     "Kalpurush", "Noto Sans Bengali", sans-serif is just its default value
+     from variables.css above, not hardcoded here anymore. */
+  --font-display: var(--font-bn);
+  --font-body: var(--font-bn);
 
   /* Kalpurush renders a touch smaller than Inter at the same size, so nudge
      body-level text up slightly to keep Bangla comfortably readable. */

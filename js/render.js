@@ -11,6 +11,7 @@ import { icon } from "./icons.js";
 import { getCurrentLanguage } from "./language.js";
 import { observeReveal, prefersReducedMotion } from "./animations.js";
 import { applySiteSettings } from "./site-settings.js";
+import { initAdaptiveGlassText } from "./glass-adapt.js";
 
 /* ---------------------------------------------------------------------------
    Services data: fetched live from /api/services (admin-editable, backed by
@@ -261,22 +262,22 @@ async function loadTicker() {
   }
 }
 
-let cachedHeroImage = null;
+let cachedHeroImages = null; // { light: url, dark: url } — always fully resolved w/ fallback
 
 async function loadHeroImage() {
-  if (cachedHeroImage) return cachedHeroImage;
+  if (cachedHeroImages) return cachedHeroImages;
   try {
     const res = await fetch("/api/hero", { cache: "no-store" });
     if (!res.ok) throw new Error("bad status");
     const data = await res.json();
-    if (data.image && typeof data.image.dataUrl === "string") {
-      cachedHeroImage = data.image.dataUrl;
-      return cachedHeroImage;
-    }
-    throw new Error("no custom image set");
+    cachedHeroImages = {
+      light: typeof data.light?.dataUrl === "string" ? data.light.dataUrl : defaultHeroImage,
+      dark: typeof data.dark?.dataUrl === "string" ? data.dark.dataUrl : defaultHeroImage,
+    };
+    return cachedHeroImages;
   } catch (err) {
-    cachedHeroImage = defaultHeroImage;
-    return cachedHeroImage;
+    cachedHeroImages = { light: defaultHeroImage, dark: defaultHeroImage };
+    return cachedHeroImages;
   }
 }
 
@@ -299,10 +300,23 @@ async function loadSiteSettings() {
   }
 }
 
-export function renderHeroImage(src) {
-  const hero = document.querySelector(".hero");
-  if (!hero) return;
-  hero.style.setProperty("--hero-image", `url("${src}")`);
+const HERO_STYLE_TAG_ID = "ovisfix-hero-image";
+
+// Injects theme-scoped rules (not a flat inline --hero-image) so the
+// banner swaps automatically via the existing :root[data-theme="..."]
+// selector the instant the visitor toggles dark/light — no JS re-run
+// needed on theme change for the image itself (glass-adapt.js still
+// re-samples brightness on change, since the two images can differ).
+export function renderHeroImage({ light, dark }) {
+  let tag = document.getElementById(HERO_STYLE_TAG_ID);
+  if (!tag) {
+    tag = document.createElement("style");
+    tag.id = HERO_STYLE_TAG_ID;
+    document.head.appendChild(tag);
+  }
+  tag.textContent = `
+:root[data-theme="light"] { --hero-image: url("${light}"); }
+:root[data-theme="dark"] { --hero-image: url("${dark}"); }`;
 }
 
 /* ---------------------------------------------------------------------------
@@ -400,13 +414,19 @@ export function renderStats() {
 /* ---------------------------------------------------------------------------
    Render everything present on the current page
    --------------------------------------------------------------------------- */
+function runAdaptiveGlassForCurrentTheme(siteSettings, heroImages) {
+  const theme = document.documentElement.getAttribute("data-theme") || "light";
+  const heroSrc = heroImages ? heroImages[theme] : null;
+  initAdaptiveGlassText(siteSettings, heroSrc);
+}
+
 export async function renderAll() {
   // Fetched in parallel (not sequentially awaited) — the hero image and
   // ticker have nothing to do with services data, so there's no reason
   // to make them wait behind it. On a slow mobile connection the old
   // sequential chain (services -> ticker -> hero) meant the hero banner
   // could stay blank for the combined time of all three requests.
-  const [svc, ticker, heroImage, siteSettings] = await Promise.all([
+  const [svc, ticker, heroImages, siteSettings] = await Promise.all([
     loadServices(),
     loadTicker(),
     loadHeroImage(),
@@ -415,11 +435,21 @@ export async function renderAll() {
   applySiteSettings(siteSettings);
   renderStats();
   renderTicker(ticker);
-  renderHeroImage(heroImage);
+  renderHeroImage(heroImages);
   renderServices(svc);
   renderConfigurator();
   renderComparison(svc);
   renderWhyUs();
   renderFAQ();
   renderTerms();
+
+  runAdaptiveGlassForCurrentTheme(siteSettings, heroImages);
+  // The banner + page background can differ between light and dark (a
+  // different image per theme, or the "default" background type which is
+  // itself theme-dependent) — re-sample for whichever is now showing
+  // whenever the visitor flips the toggle, instead of only ever checking
+  // the theme that was active on first paint.
+  document.addEventListener("ovisfix:themechange", () => {
+    runAdaptiveGlassForCurrentTheme(siteSettings, heroImages);
+  });
 }

@@ -164,15 +164,26 @@
   align-items: center;
   justify-content: center;
   overflow: hidden;
-  /* Glass panel matching the navbar directly beneath it (was a flat solid
-     --ink-navy fill). --ticker-bg / --glass-blur are theme-aware tokens
-     from variables.css, overridable per-theme from Admin → Appearance. */
+  border-bottom: 1px solid var(--border-soft);
+  /* The edge-fade mask lives on THIS element; the glass fill lives on
+     ::before instead of here directly. Mobile Safari has a documented bug
+     where an element with BOTH -webkit-mask-image AND -webkit-backdrop-filter
+     at once can silently freeze transform animations on its children — which
+     is exactly why the scrolling ticker text stopped moving on phones once
+     the bar became glass. Splitting the two effects across parent/pseudo
+     keeps the same combined look without triggering it. */
+  -webkit-mask-image: linear-gradient(90deg, transparent, #000 4%, #000 96%, transparent);
+  mask-image: linear-gradient(90deg, transparent, #000 4%, #000 96%, transparent);
+}
+
+.top-ticker::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  z-index: -1;
   background: var(--ticker-bg);
   backdrop-filter: blur(var(--glass-blur)) saturate(160%);
   -webkit-backdrop-filter: blur(var(--glass-blur)) saturate(160%);
-  border-bottom: 1px solid var(--border-soft);
-  -webkit-mask-image: linear-gradient(90deg, transparent, #000 4%, #000 96%, transparent);
-  mask-image: linear-gradient(90deg, transparent, #000 4%, #000 96%, transparent);
 }
 
 .navbar {
@@ -396,7 +407,7 @@
      it had NO image until JS finished a chain of network requests. */
   background-image: var(--hero-image, url("../images/hero-banner.webp"));
   background-size: cover;
-  background-position: center right;
+  background-position: var(--hero-pos-x-desktop) center;
   background-repeat: no-repeat;
 }
 
@@ -418,16 +429,20 @@
    light/dark toggle — a fixed dark scrim keeps text legible either way,
    and the text colors below are intentionally hardcoded rather than
    theme-variable for the same reason. */
+/* The hero always uses its own hardcoded white text regardless of the
+   site's light/dark toggle — the scrim strength is what adapts instead
+   (see --hero-scrim-* in variables.css: much lighter in light mode so the
+   banner photo reads through, unchanged in dark mode). */
 .hero-scrim {
   position: absolute;
   inset: 0;
   z-index: 0;
   background: linear-gradient(
     90deg,
-    rgba(2, 3, 6, 0.94) 0%,
-    rgba(2, 3, 6, 0.8) 32%,
-    rgba(2, 3, 6, 0.4) 58%,
-    rgba(2, 3, 6, 0.08) 100%
+    var(--hero-scrim-1) 0%,
+    var(--hero-scrim-2) 32%,
+    var(--hero-scrim-3) 58%,
+    var(--hero-scrim-4) 100%
   );
   pointer-events: none;
 }
@@ -587,6 +602,30 @@
 .hero-ticker-sep {
   color: var(--signal-red);
   font-size: 0.7rem;
+}
+
+/* ---- Adaptive glass text (js/glass-adapt.js) ----
+   Overrides theme-based text color for whatever's sitting directly on the
+   navbar/ticker glass, based on what's actually visible behind it right
+   now (sampled from the hero image or the page background) — independent
+   of light/dark THEME, since a translucent panel can sit over either a
+   dark photo or a light background regardless of which theme is active. */
+.navbar.glass-on-dark .nav-links a,
+.navbar.glass-on-dark .brand-name,
+.top-ticker.glass-on-dark .hero-ticker-item {
+  color: #ffffff;
+}
+.navbar.glass-on-dark .navbar-actions .icon-btn {
+  color: #ffffff;
+}
+
+.navbar.glass-on-light .nav-links a,
+.navbar.glass-on-light .brand-name,
+.top-ticker.glass-on-light .hero-ticker-item {
+  color: #10192b;
+}
+.navbar.glass-on-light .navbar-actions .icon-btn {
+  color: #10192b;
 }
 
 @keyframes ticker-scroll {

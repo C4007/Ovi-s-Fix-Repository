@@ -8,12 +8,14 @@
 import { initTheme } from "./theme.js";
 import { initLoadingScreen } from "./animations.js";
 import { defaultServices, defaultTicker, defaultSiteSettings } from "./data.js";
-import { applySiteSettings, CURATED_GOOGLE_FONTS } from "./site-settings.js";
+import { applySiteSettings } from "./site-settings.js";
 
 let currentServices = [];
 let currentTicker = [];
 let currentSettings = null;
 let appearanceMode = "light"; // which theme's colors/glass fields are showing
+let heroThemeMode = "light"; // which theme's hero banner is showing in the Hero panel
+let heroImages = { light: null, dark: null }; // saved data URLs, null = falls back to bundled default
 let pendingHeroImage = null; // { dataUrl, width, height } once a valid file is chosen
 
 function $(id) {
@@ -230,6 +232,10 @@ function validateHeroClientSide(dataUrl, width, height) {
   return null;
 }
 
+function heroPreviewFallbackText(theme) {
+  return `Using the default bundled image for ${theme} mode — no custom upload saved yet.`;
+}
+
 function handleHeroFileSelect(e) {
   const file = e.target.files[0];
   const statusEl = $("hero-status");
@@ -252,7 +258,7 @@ function handleHeroFileSelect(e) {
       }
       pendingHeroImage = { dataUrl, width, height };
       $("hero-preview-img").src = dataUrl;
-      $("hero-preview-meta").textContent = `${width} × ${height}px — ready to save`;
+      $("hero-preview-meta").textContent = `${width} × ${height}px — ready to save for ${heroThemeMode} mode`;
       $("hero-save-btn").disabled = false;
       showStatus(statusEl, "success", "Looks good — click Save to publish it.");
     };
@@ -275,7 +281,7 @@ async function handleSaveHero() {
     const res = await fetch("/api/admin/hero", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ image: pendingHeroImage }),
+      body: JSON.stringify({ theme: heroThemeMode, image: pendingHeroImage }),
     });
     const data = await res.json();
     if (!res.ok || !data.success) {
@@ -284,7 +290,8 @@ async function handleSaveHero() {
       saveBtn.textContent = originalLabel;
       return;
     }
-    showStatus(statusEl, "success", "Saved! The homepage will show this on next load.");
+    heroImages[heroThemeMode] = pendingHeroImage.dataUrl;
+    showStatus(statusEl, "success", `Saved! The homepage will show this for ${heroThemeMode} mode on next load.`);
     pendingHeroImage = null;
     saveBtn.textContent = originalLabel;
   } catch (err) {
@@ -294,22 +301,62 @@ async function handleSaveHero() {
   }
 }
 
-async function loadHeroIntoDashboard() {
+function renderHeroPreviewForCurrentTheme() {
   const img = $("hero-preview-img");
   const meta = $("hero-preview-meta");
+  const saved = heroImages[heroThemeMode];
+  if (saved) {
+    img.src = saved;
+    meta.textContent = `Current ${heroThemeMode}-mode banner`;
+  } else {
+    img.src = "images/hero-banner.webp";
+    meta.textContent = heroPreviewFallbackText(heroThemeMode);
+  }
+  $("hero-save-btn").disabled = true;
+  pendingHeroImage = null;
+  clearStatus($("hero-status"));
+}
+
+function initHeroThemeToggle() {
+  document.querySelectorAll("#hero-theme-toggle .device-btn").forEach((btn) => {
+    btn.addEventListener("click", () => {
+      heroThemeMode = btn.dataset.heroTheme;
+      document.querySelectorAll("#hero-theme-toggle .device-btn").forEach((b) => b.classList.toggle("is-active", b === btn));
+      renderHeroPreviewForCurrentTheme();
+    });
+  });
+}
+
+async function loadHeroIntoDashboard() {
   try {
     const res = await fetch("/api/hero", { cache: "no-store" });
     const data = await res.json();
-    if (data.image && data.image.dataUrl) {
-      img.src = data.image.dataUrl;
-      meta.textContent = `Current: ${data.image.width} × ${data.image.height}px`;
-      return;
-    }
+    heroImages.light = data.light?.dataUrl || null;
+    heroImages.dark = data.dark?.dataUrl || null;
   } catch (err) {
-    /* fall through to default preview below */
+    heroImages.light = null;
+    heroImages.dark = null;
   }
-  img.src = "images/hero-banner.webp";
-  meta.textContent = "Using the default bundled image — no custom upload saved yet.";
+  renderHeroPreviewForCurrentTheme();
+}
+
+function updateHeroPositionLabels() {
+  $("hero-pos-desktop-value").textContent = `${currentSettings.heroPosition.desktop}%`;
+  $("hero-pos-mobile-value").textContent = `${currentSettings.heroPosition.mobile}%`;
+}
+
+function initHeroPositionEvents() {
+  $("hero-pos-desktop").addEventListener("input", (e) => {
+    currentSettings.heroPosition.desktop = Number(e.target.value);
+    updateHeroPositionLabels();
+    applySiteSettings(currentSettings);
+  });
+  $("hero-pos-mobile").addEventListener("input", (e) => {
+    currentSettings.heroPosition.mobile = Number(e.target.value);
+    updateHeroPositionLabels();
+    applySiteSettings(currentSettings);
+  });
+  $("hero-position-save-btn").addEventListener("click", () => saveSettingsSection("hero-position-status", "hero-position-save-btn", "Saved! Applies to both banners."));
 }
 
 /* ---------------------------------------------------------------------------
@@ -536,15 +583,28 @@ async function loadServicesIntoDashboard() {
 }
 
 /* ---------------------------------------------------------------------------
-   Appearance tab: fonts, colors, background, glass effect
+   Sidebar panel switching (Hero / Ticker / Services / Fonts / Colors / Background)
    --------------------------------------------------------------------------- */
-function switchAdminTab(tab) {
-  $("admin-panel-content").style.display = tab === "content" ? "" : "none";
-  $("admin-panel-appearance").style.display = tab === "appearance" ? "" : "none";
-  $("admin-tab-btn-content").classList.toggle("is-active", tab === "content");
-  $("admin-tab-btn-appearance").classList.toggle("is-active", tab === "appearance");
+const ADMIN_PANELS = ["hero", "ticker", "services", "fonts", "colors", "background"];
+
+function switchAdminPanel(panel) {
+  for (const p of ADMIN_PANELS) {
+    $(`admin-panel-${p}`).style.display = p === panel ? "" : "none";
+  }
+  document.querySelectorAll(".admin-side-btn").forEach((btn) => {
+    btn.classList.toggle("is-active", btn.dataset.panel === panel);
+  });
 }
 
+function initSidebarNav() {
+  document.querySelectorAll(".admin-side-btn").forEach((btn) => {
+    btn.addEventListener("click", () => switchAdminPanel(btn.dataset.panel));
+  });
+}
+
+/* ---------------------------------------------------------------------------
+   Shared color-pair + status helpers
+   --------------------------------------------------------------------------- */
 function setColorPair(pickerId, textId, value) {
   $(pickerId).value = value;
   $(textId).value = value;
@@ -566,6 +626,104 @@ function wireColorPair(pickerId, textId, onChange) {
   });
 }
 
+// Every panel edits the SAME in-memory currentSettings object and just
+// saves the whole thing — simpler than partial-update endpoints, and the
+// backend validates the complete blob either way.
+async function saveSettingsSection(statusElId, btnId, successMessage) {
+  const statusEl = $(statusElId);
+  const btn = $(btnId);
+  clearStatus(statusEl);
+  btn.disabled = true;
+  const originalLabel = btn.textContent;
+  btn.textContent = "Saving...";
+  try {
+    const res = await fetch("/api/admin/settings", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ settings: currentSettings }),
+    });
+    const data = await res.json();
+    if (!res.ok || !data.success) {
+      showStatus(statusEl, "error", data.error || "Could not save.");
+      return;
+    }
+    showStatus(statusEl, "success", successMessage || "Saved! The live site now uses these settings.");
+  } catch (err) {
+    showStatus(statusEl, "error", "Network error — could not reach the server.");
+  } finally {
+    btn.disabled = false;
+    btn.textContent = originalLabel;
+  }
+}
+
+/* ---------------------------------------------------------------------------
+   Fonts panel — sourced ONLY from fonts/manifest.json (real files in the
+   repo's /fonts folder), never from an in-browser upload. See
+   scripts/generate-font-manifest.mjs.
+   --------------------------------------------------------------------------- */
+let fontManifestFamilies = []; // string[] of family names actually available
+
+async function loadFontManifest() {
+  try {
+    const res = await fetch("/fonts/manifest.json", { cache: "no-store" });
+    if (!res.ok) throw new Error("bad status");
+    const data = await res.json();
+    fontManifestFamilies = Array.isArray(data.fonts) ? data.fonts.map((f) => f.family) : [];
+  } catch (err) {
+    fontManifestFamilies = [];
+  }
+}
+
+function populateFontSelects() {
+  // Latin selects: whatever's in the manifest, falling back to Montserrat
+  // as a hardcoded option so the list is never empty even before any
+  // fonts.rar-style upload has happened.
+  const latinNames = fontManifestFamilies.length ? fontManifestFamilies : ["Montserrat"];
+  const latinOptions = latinNames.map((f) => `<option value="${escapeHtml(f)}">${escapeHtml(f)}</option>`).join("");
+  $("font-heading-select").innerHTML = latinOptions;
+  $("font-body-select").innerHTML = latinOptions;
+  $("font-heading-select").value = currentSettings.fonts.heading;
+  $("font-body-select").value = currentSettings.fonts.body;
+  if (!$("font-heading-select").value) {
+    $("font-heading-select").value = latinNames[0];
+    currentSettings.fonts.heading = latinNames[0];
+  }
+  if (!$("font-body-select").value) {
+    $("font-body-select").value = latinNames[0];
+    currentSettings.fonts.body = latinNames[0];
+  }
+
+  // Bengali select: manifest families PLUS "Noto Sans Bengali", which is
+  // always available since it's loaded from Google Fonts in every page's
+  // <head> regardless of what's in /fonts.
+  const bengaliNames = [...new Set([...fontManifestFamilies, "Noto Sans Bengali"])];
+  $("font-bengali-select").innerHTML = bengaliNames.map((f) => `<option value="${escapeHtml(f)}">${escapeHtml(f)}</option>`).join("");
+  $("font-bengali-select").value = currentSettings.fonts.bengali;
+  if (!$("font-bengali-select").value) {
+    $("font-bengali-select").value = "Noto Sans Bengali";
+    currentSettings.fonts.bengali = "Noto Sans Bengali";
+  }
+}
+
+function initFontsEvents() {
+  $("font-heading-select").addEventListener("change", (e) => {
+    currentSettings.fonts.heading = e.target.value;
+    applySiteSettings(currentSettings);
+  });
+  $("font-body-select").addEventListener("change", (e) => {
+    currentSettings.fonts.body = e.target.value;
+    applySiteSettings(currentSettings);
+  });
+  $("font-bengali-select").addEventListener("change", (e) => {
+    currentSettings.fonts.bengali = e.target.value;
+    applySiteSettings(currentSettings);
+  });
+  $("fonts-save-btn").addEventListener("click", () => saveSettingsSection("fonts-status", "fonts-save-btn", "Saved! Fonts updated site-wide."));
+}
+
+/* ---------------------------------------------------------------------------
+   Colors & Glass panel
+   --------------------------------------------------------------------------- */
 function populateColorAndGlassFields() {
   const c = currentSettings.colors[appearanceMode];
   setColorPair("color-accent-picker", "color-accent", c.accent);
@@ -574,21 +732,53 @@ function populateColorAndGlassFields() {
   setColorPair("color-body-picker", "color-body", c.body);
 
   const g = currentSettings.glass[appearanceMode];
-  $("glass-blur").value = g.blur;
-  $("glass-blur-value").textContent = `${g.blur}px`;
-  document.querySelectorAll("#glass-tint-toggle .device-btn").forEach((b) => b.classList.toggle("is-active", b.dataset.tint === g.tint));
+  $("glass-intensity").value = g.intensity;
+}
+
+function setAppearanceMode(mode) {
+  appearanceMode = mode;
+  const toggle = $("appearance-mode-toggle");
+  const isDark = mode === "dark";
+  toggle.setAttribute("aria-checked", isDark ? "true" : "false");
+  toggle.setAttribute("aria-label", isDark ? "Editing dark mode — click for light mode" : "Editing light mode — click for dark mode");
+  populateColorAndGlassFields();
 }
 
 function initModeToggle() {
-  document.querySelectorAll("#appearance-mode-toggle .device-btn").forEach((btn) => {
-    btn.addEventListener("click", () => {
-      appearanceMode = btn.dataset.mode;
-      document.querySelectorAll("#appearance-mode-toggle .device-btn").forEach((b) => b.classList.toggle("is-active", b === btn));
-      populateColorAndGlassFields();
-    });
+  $("appearance-mode-toggle").addEventListener("click", () => {
+    setAppearanceMode(appearanceMode === "light" ? "dark" : "light");
   });
 }
 
+function initColorsAndGlassEvents() {
+  wireColorPair("color-accent-picker", "color-accent", (v) => {
+    currentSettings.colors[appearanceMode].accent = v;
+    applySiteSettings(currentSettings);
+  });
+  wireColorPair("color-accent2-picker", "color-accent2", (v) => {
+    currentSettings.colors[appearanceMode].accent2 = v;
+    applySiteSettings(currentSettings);
+  });
+  wireColorPair("color-heading-picker", "color-heading", (v) => {
+    currentSettings.colors[appearanceMode].heading = v;
+    applySiteSettings(currentSettings);
+  });
+  wireColorPair("color-body-picker", "color-body", (v) => {
+    currentSettings.colors[appearanceMode].body = v;
+    applySiteSettings(currentSettings);
+  });
+
+  $("glass-intensity").addEventListener("input", (e) => {
+    currentSettings.glass[appearanceMode].intensity = Number(e.target.value);
+    applySiteSettings(currentSettings);
+  });
+
+  $("colors-save-btn").addEventListener("click", () => saveSettingsSection("colors-status", "colors-save-btn", "Saved! Colors & glass updated site-wide."));
+}
+
+/* ---------------------------------------------------------------------------
+   Background panel
+   --------------------------------------------------------------------------- */
 function updateBgTypeUI() {
   const type = currentSettings.background.type;
   document.querySelectorAll("#bg-type-toggle .device-btn").forEach((b) => b.classList.toggle("is-active", b.dataset.bgtype === type));
@@ -619,90 +809,9 @@ function initDevicePreviewToggles() {
   });
 }
 
-function populateFontSelects() {
-  const customNames = (currentSettings.fonts.customFonts || []).map((f) => f.name);
-  const curatedOptions = CURATED_GOOGLE_FONTS.map((f) => `<option value="${escapeHtml(f)}">${escapeHtml(f)}</option>`).join("");
-  const customOptions = customNames.length
-    ? `<optgroup label="Uploaded">${customNames.map((n) => `<option value="${escapeHtml(n)}">${escapeHtml(n)}</option>`).join("")}</optgroup>`
-    : "";
-  $("font-heading-select").innerHTML = curatedOptions + customOptions;
-  $("font-body-select").innerHTML = curatedOptions + customOptions;
-  $("font-heading-select").value = currentSettings.fonts.heading;
-  $("font-body-select").value = currentSettings.fonts.body;
-  // If the previously-saved font name no longer exists as an option (e.g.
-  // its upload was removed), the <select> silently ends up with nothing
-  // selected — fall back to the default rather than leaving it blank.
-  if (!$("font-heading-select").value) {
-    $("font-heading-select").value = "Montserrat";
-    currentSettings.fonts.heading = "Montserrat";
-  }
-  if (!$("font-body-select").value) {
-    $("font-body-select").value = "Montserrat";
-    currentSettings.fonts.body = "Montserrat";
-  }
-}
-
-function renderCustomFontsList() {
-  const list = currentSettings.fonts.customFonts || [];
-  $("custom-fonts-list").innerHTML = list.length
-    ? list
-        .map(
-          (f, i) =>
-            `<span class="admin-upload-chip">${escapeHtml(f.name)}<button type="button" data-remove-font="${i}" aria-label="Remove ${escapeHtml(f.name)}">&times;</button></span>`
-        )
-        .join("")
-    : "";
-  $("custom-fonts-list")
-    .querySelectorAll("[data-remove-font]")
-    .forEach((btn) => {
-      btn.addEventListener("click", () => {
-        const idx = Number(btn.dataset.removeFont);
-        const removed = currentSettings.fonts.customFonts.splice(idx, 1)[0];
-        if (currentSettings.fonts.heading === removed?.name) currentSettings.fonts.heading = "Montserrat";
-        if (currentSettings.fonts.body === removed?.name) currentSettings.fonts.body = "Montserrat";
-        renderCustomFontsList();
-        populateFontSelects();
-        applySiteSettings(currentSettings);
-      });
-    });
-}
-
-function fontMimeFor(filename) {
-  const ext = (filename.split(".").pop() || "").toLowerCase();
-  return { woff2: "font/woff2", woff: "font/woff", ttf: "font/ttf", otf: "font/otf" }[ext] || "application/octet-stream";
-}
-
-function handleFontFileSelect(e) {
-  const file = e.target.files[0];
-  const statusEl = $("font-upload-status");
-  clearStatus(statusEl);
-  if (!file) return;
-  if (file.size > 470_000) {
-    showStatus(statusEl, "error", "Font file is too large — please use a compressed WOFF2 export (under ~450KB).");
-    e.target.value = "";
-    return;
-  }
-  const reader = new FileReader();
-  reader.onload = () => {
-    const bytes = new Uint8Array(reader.result);
-    let binary = "";
-    for (let i = 0; i < bytes.length; i++) binary += String.fromCharCode(bytes[i]);
-    const dataUrl = `data:${fontMimeFor(file.name)};base64,${btoa(binary)}`;
-    const name = (file.name.replace(/\.[^.]+$/, "").slice(0, 60) || `Custom Font ${currentSettings.fonts.customFonts.length + 1}`).trim();
-    currentSettings.fonts.customFonts.push({ name, dataUrl });
-    renderCustomFontsList();
-    populateFontSelects();
-    applySiteSettings(currentSettings);
-    showStatus(statusEl, "success", `"${name}" uploaded — pick it above, then click Save Appearance.`);
-    e.target.value = "";
-  };
-  reader.onerror = () => showStatus(statusEl, "error", "Couldn't read this file.");
-  reader.readAsArrayBuffer(file);
-}
-
 function handleBgImageFileSelect(e) {
   const file = e.target.files[0];
-  const statusEl = $("appearance-status");
+  const statusEl = $("background-status");
   clearStatus(statusEl);
   if (!file) return;
   if (file.size > 2_900_000) {
@@ -726,43 +835,8 @@ function handleBgImageFileSelect(e) {
   reader.readAsDataURL(file);
 }
 
-function initAppearanceEvents() {
-  $("admin-tab-btn-content").addEventListener("click", () => switchAdminTab("content"));
-  $("admin-tab-btn-appearance").addEventListener("click", () => switchAdminTab("appearance"));
-
-  initModeToggle();
+function initBackgroundEvents() {
   initBgTypeToggle();
-  initDevicePreviewToggles();
-
-  wireColorPair("color-accent-picker", "color-accent", (v) => {
-    currentSettings.colors[appearanceMode].accent = v;
-    applySiteSettings(currentSettings);
-  });
-  wireColorPair("color-accent2-picker", "color-accent2", (v) => {
-    currentSettings.colors[appearanceMode].accent2 = v;
-    applySiteSettings(currentSettings);
-  });
-  wireColorPair("color-heading-picker", "color-heading", (v) => {
-    currentSettings.colors[appearanceMode].heading = v;
-    applySiteSettings(currentSettings);
-  });
-  wireColorPair("color-body-picker", "color-body", (v) => {
-    currentSettings.colors[appearanceMode].body = v;
-    applySiteSettings(currentSettings);
-  });
-
-  $("glass-blur").addEventListener("input", (e) => {
-    currentSettings.glass[appearanceMode].blur = Number(e.target.value);
-    $("glass-blur-value").textContent = `${e.target.value}px`;
-    applySiteSettings(currentSettings);
-  });
-  document.querySelectorAll("#glass-tint-toggle .device-btn").forEach((btn) => {
-    btn.addEventListener("click", () => {
-      currentSettings.glass[appearanceMode].tint = btn.dataset.tint;
-      document.querySelectorAll("#glass-tint-toggle .device-btn").forEach((b) => b.classList.toggle("is-active", b === btn));
-      applySiteSettings(currentSettings);
-    });
-  });
 
   wireColorPair("bg-solid-picker", "bg-solid", (v) => {
     currentSettings.background.solid = v;
@@ -783,46 +857,12 @@ function initAppearanceEvents() {
   });
   $("bg-image-file-input").addEventListener("change", handleBgImageFileSelect);
 
-  $("font-heading-select").addEventListener("change", (e) => {
-    currentSettings.fonts.heading = e.target.value;
-    applySiteSettings(currentSettings);
-  });
-  $("font-body-select").addEventListener("change", (e) => {
-    currentSettings.fonts.body = e.target.value;
-    applySiteSettings(currentSettings);
-  });
-  $("font-file-input").addEventListener("change", handleFontFileSelect);
-
-  $("appearance-save-btn").addEventListener("click", handleSaveAppearance);
+  $("background-save-btn").addEventListener("click", () => saveSettingsSection("background-status", "background-save-btn", "Saved! Background updated site-wide."));
 }
 
-async function handleSaveAppearance() {
-  const statusEl = $("appearance-status");
-  const btn = $("appearance-save-btn");
-  clearStatus(statusEl);
-  btn.disabled = true;
-  const originalLabel = btn.textContent;
-  btn.textContent = "Saving...";
-  try {
-    const res = await fetch("/api/admin/settings", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ settings: currentSettings }),
-    });
-    const data = await res.json();
-    if (!res.ok || !data.success) {
-      showStatus(statusEl, "error", data.error || "Could not save appearance settings.");
-      return;
-    }
-    showStatus(statusEl, "success", "Saved! The live site now uses these settings.");
-  } catch (err) {
-    showStatus(statusEl, "error", "Network error — could not reach the server.");
-  } finally {
-    btn.disabled = false;
-    btn.textContent = originalLabel;
-  }
-}
-
+/* ---------------------------------------------------------------------------
+   Load everything into the Appearance-related panels
+   --------------------------------------------------------------------------- */
 async function loadSettingsIntoDashboard() {
   try {
     const res = await fetch("/api/settings", { cache: "no-store" });
@@ -833,13 +873,13 @@ async function loadSettingsIntoDashboard() {
   }
   // Defensive fallback for any section missing from an older saved blob.
   currentSettings.fonts = currentSettings.fonts || structuredClone(defaultSiteSettings.fonts);
-  currentSettings.fonts.customFonts = currentSettings.fonts.customFonts || [];
   currentSettings.colors = currentSettings.colors || structuredClone(defaultSiteSettings.colors);
   currentSettings.background = currentSettings.background || structuredClone(defaultSiteSettings.background);
   currentSettings.glass = currentSettings.glass || structuredClone(defaultSiteSettings.glass);
+  currentSettings.heroPosition = currentSettings.heroPosition || structuredClone(defaultSiteSettings.heroPosition);
 
+  await loadFontManifest();
   populateFontSelects();
-  renderCustomFontsList();
   populateColorAndGlassFields();
   updateBgTypeUI();
   setColorPair("bg-solid-picker", "bg-solid", currentSettings.background.solid);
@@ -850,6 +890,10 @@ async function loadSettingsIntoDashboard() {
   if (currentSettings.background.image?.dataUrl) {
     $("bg-image-preview-img").src = currentSettings.background.image.dataUrl;
   }
+  $("hero-pos-desktop").value = currentSettings.heroPosition.desktop;
+  $("hero-pos-mobile").value = currentSettings.heroPosition.mobile;
+  updateHeroPositionLabels();
+
   applySiteSettings(currentSettings);
 }
 
@@ -907,7 +951,14 @@ async function init() {
   initTheme();
   initServicesListEvents();
   initTickerListEvents();
-  initAppearanceEvents();
+  initSidebarNav();
+  initHeroThemeToggle();
+  initHeroPositionEvents();
+  initModeToggle();
+  initColorsAndGlassEvents();
+  initBackgroundEvents();
+  initDevicePreviewToggles();
+  initFontsEvents();
 
   $("admin-login-form").addEventListener("submit", handleLoginSubmit);
   $("admin-logout-btn").addEventListener("click", handleLogout);

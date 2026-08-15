@@ -1,13 +1,13 @@
 // ============================================================================
 // Ovi's Fix — /api/admin/hero (Vercel Serverless Function)
-// Authenticated write path for the hero banner image. Mirrors
-// api/admin/services.js / api/admin/ticker.js — see those for the fuller
-// explanation of the auth flow.
+// Authenticated write path for the hero banner image. Now takes a `theme`
+// ("light" | "dark") alongside the image so each theme can have its own
+// banner — see lib/hero-store.js.
 // ============================================================================
 
 import { verifySessionToken, SESSION_COOKIE_NAME } from "../../lib/session.js";
 import { parseCookie } from "../../lib/cookies.js";
-import { saveHero } from "../../lib/hero-store.js";
+import { saveHeroForTheme } from "../../lib/hero-store.js";
 import { validateHero } from "../../lib/validate-hero.js";
 
 export default async function handler(req, res) {
@@ -30,10 +30,14 @@ export default async function handler(req, res) {
     }
   }
 
+  if (body.theme !== "light" && body.theme !== "dark") {
+    return res.status(400).json({ success: false, error: 'theme must be "light" or "dark".' });
+  }
+
   const validationError = validateHero(body.image);
   if (validationError) return res.status(400).json({ success: false, error: validationError });
 
-  const result = await saveHero(process.env, { ...body.image, updatedAt: Date.now() });
+  const result = await saveHeroForTheme(process.env, body.theme, { ...body.image, updatedAt: Date.now() });
   if (!result.ok) {
     return res.status(500).json({
       success: false,

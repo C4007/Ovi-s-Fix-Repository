@@ -26,8 +26,9 @@
 
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700;800&family=IBM+Plex+Mono:wght@500;600;700&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@500;600;700&display=swap" rel="stylesheet">
 
+<link rel="stylesheet" href="css/fonts-generated.css">
 <link rel="stylesheet" href="css/variables.css">
 <link rel="stylesheet" href="css/base.css">
 <link rel="stylesheet" href="css/components.css">
@@ -85,76 +86,110 @@
         </div>
       </div>
 
-      <div id="admin-dashboard-view" style="display:none">
-        <div class="admin-tabs" role="tablist">
-          <button type="button" class="admin-tab-btn is-active" id="admin-tab-btn-content" data-tab="content">Content</button>
-          <button type="button" class="admin-tab-btn" id="admin-tab-btn-appearance" data-tab="appearance">Appearance</button>
-        </div>
+      <div id="admin-dashboard-view" class="admin-shell" style="display:none">
+        <nav class="admin-sidebar" role="tablist" aria-label="Admin sections">
+          <button type="button" class="admin-side-btn is-active" data-panel="hero">Hero Banner</button>
+          <button type="button" class="admin-side-btn" data-panel="ticker">Ticker</button>
+          <button type="button" class="admin-side-btn" data-panel="services">Services</button>
+          <button type="button" class="admin-side-btn" data-panel="fonts">Fonts</button>
+          <button type="button" class="admin-side-btn" data-panel="colors">Colors &amp; Glass</button>
+          <button type="button" class="admin-side-btn" data-panel="background">Background</button>
+        </nav>
 
-        <div id="admin-panel-content" class="admin-tab-panel">
-        <div class="admin-dashboard-head">
-          <div>
-            <div class="eyebrow">Admin</div>
-            <h2>Hero Banner Image</h2>
-            <p class="section-sub">Needs a wide banner shape — around 2.36:1 (like the default, 2560×1086), at least 1600px wide, under ~2MB. Anything else is rejected before it saves, so the homepage never ends up with a stretched or cropped mess.</p>
-          </div>
-        </div>
-        <div class="form-status" id="hero-status" role="status"></div>
-        <div class="admin-preview-devicebar" data-preview-for="hero-preview-wrap">
-          <button type="button" class="device-btn is-active" data-device="desktop">Desktop</button>
-          <button type="button" class="device-btn" data-device="mobile">Mobile</button>
-        </div>
-        <div class="admin-hero-preview glass" id="hero-preview-wrap">
-          <img id="hero-preview-img" alt="Current hero banner preview">
-        </div>
-        <p class="admin-id-hint" id="hero-preview-meta"></p>
-        <div class="admin-hero-upload">
-          <label class="btn btn-secondary" for="hero-file-input">Choose Image&hellip;</label>
-          <input type="file" id="hero-file-input" accept="image/*" style="display:none">
-          <button type="button" class="btn btn-primary" id="hero-save-btn" disabled>Save Hero Image</button>
-        </div>
+        <div class="admin-panels">
 
-        <div class="admin-dashboard-head" style="margin-top:52px">
-          <div>
-            <div class="eyebrow">Admin</div>
-            <h2>Hero Ticker</h2>
-            <p class="section-sub">The scrolling line of text pinned to the very top of every page. Add, edit, or reorder — the order here is the order it scrolls.</p>
+        <!-- ============ HERO ============ -->
+        <div id="admin-panel-hero" class="admin-panel">
+          <div class="admin-dashboard-head">
+            <div>
+              <div class="eyebrow">Admin</div>
+              <h2>Hero Banner Image</h2>
+              <p class="section-sub">Separate banner per theme — visitors in light mode and dark mode can see completely different images. Needs a wide banner shape (around 2.36:1, like the default 2560×1086), at least 1600px wide, under ~2MB.</p>
+            </div>
+            <div class="admin-dashboard-actions">
+              <div class="device-btn-group" id="hero-theme-toggle">
+                <button type="button" class="device-btn is-active" data-hero-theme="light">Light Mode</button>
+                <button type="button" class="device-btn" data-hero-theme="dark">Dark Mode</button>
+              </div>
+            </div>
           </div>
-          <div class="admin-dashboard-actions">
-            <button type="button" class="btn btn-secondary" id="ticker-add-btn">+ Add Line</button>
-            <button type="button" class="btn btn-primary" id="ticker-save-btn">Save Ticker</button>
+          <div class="form-status" id="hero-status" role="status"></div>
+          <div class="admin-preview-devicebar" data-preview-for="hero-preview-wrap">
+            <button type="button" class="device-btn is-active" data-device="desktop">Desktop</button>
+            <button type="button" class="device-btn" data-device="mobile">Mobile</button>
           </div>
-        </div>
-        <div class="form-status" id="ticker-save-status" role="status"></div>
-        <div id="ticker-lines-list" class="admin-services-list"></div>
-
-        <div class="admin-dashboard-head" style="margin-top:52px">
-          <div>
-            <div class="eyebrow">Admin</div>
-            <h2>Manage Services</h2>
-            <p class="section-sub">Changes go live on the homepage as soon as you save. New services need a unique ID — it auto-fills, but feel free to edit it before your first save.</p>
+          <div class="admin-hero-preview glass" id="hero-preview-wrap">
+            <img id="hero-preview-img" alt="Current hero banner preview">
           </div>
-          <div class="admin-dashboard-actions">
-            <button type="button" class="btn btn-secondary" id="admin-add-btn">+ Add Service</button>
-            <button type="button" class="btn btn-primary" id="admin-save-btn">Save All Changes</button>
-          </div>
-        </div>
-        <div class="form-status" id="admin-save-status" role="status"></div>
-        <div id="admin-services-list" class="admin-services-list"></div>
-        </div>
-
-        <div id="admin-panel-appearance" class="admin-tab-panel" style="display:none">
-
-          <div class="admin-appearance-banner glass">
-            Changes here preview instantly on this page as you edit (the ticker bar and navbar above are live). Nothing is public until you click <strong>Save Appearance</strong>.
+          <p class="admin-id-hint" id="hero-preview-meta"></p>
+          <div class="admin-hero-upload">
+            <label class="btn btn-secondary" for="hero-file-input">Choose Image&hellip;</label>
+            <input type="file" id="hero-file-input" accept="image/*" style="display:none">
+            <button type="button" class="btn btn-primary" id="hero-save-btn" disabled>Save Hero Image</button>
           </div>
 
-          <!-- Fonts -->
+          <div class="admin-dashboard-head" style="margin-top:44px">
+            <div>
+              <div class="eyebrow">Admin</div>
+              <h3>Banner Position</h3>
+              <p class="section-sub">The image's horizontal focal point — set separately for desktop and mobile since a wide banner crops very differently on a phone screen. Applies to both light and dark banners.</p>
+            </div>
+          </div>
+          <div class="admin-form-grid">
+            <div class="form-group">
+              <label class="form-label" for="hero-pos-desktop">Desktop — <span id="hero-pos-desktop-value">100%</span> <span class="admin-id-hint">(0% left, 100% right)</span></label>
+              <input type="range" id="hero-pos-desktop" min="0" max="100" step="5">
+            </div>
+            <div class="form-group">
+              <label class="form-label" for="hero-pos-mobile">Mobile — <span id="hero-pos-mobile-value">70%</span> <span class="admin-id-hint">(0% left, 100% right)</span></label>
+              <input type="range" id="hero-pos-mobile" min="0" max="100" step="5">
+            </div>
+          </div>
+          <div class="form-status" id="hero-position-status" role="status" style="margin-top:16px"></div>
+          <button type="button" class="btn btn-primary" id="hero-position-save-btn">Save Position</button>
+        </div>
+
+        <!-- ============ TICKER ============ -->
+        <div id="admin-panel-ticker" class="admin-panel" style="display:none">
+          <div class="admin-dashboard-head">
+            <div>
+              <div class="eyebrow">Admin</div>
+              <h2>Hero Ticker</h2>
+              <p class="section-sub">The scrolling line of text pinned to the very top of every page. Add, edit, or reorder — the order here is the order it scrolls.</p>
+            </div>
+            <div class="admin-dashboard-actions">
+              <button type="button" class="btn btn-secondary" id="ticker-add-btn">+ Add Line</button>
+              <button type="button" class="btn btn-primary" id="ticker-save-btn">Save Ticker</button>
+            </div>
+          </div>
+          <div class="form-status" id="ticker-save-status" role="status"></div>
+          <div id="ticker-lines-list" class="admin-services-list"></div>
+        </div>
+
+        <!-- ============ SERVICES ============ -->
+        <div id="admin-panel-services" class="admin-panel" style="display:none">
+          <div class="admin-dashboard-head">
+            <div>
+              <div class="eyebrow">Admin</div>
+              <h2>Manage Services</h2>
+              <p class="section-sub">Changes go live on the homepage as soon as you save. New services need a unique ID — it auto-fills, but feel free to edit it before your first save.</p>
+            </div>
+            <div class="admin-dashboard-actions">
+              <button type="button" class="btn btn-secondary" id="admin-add-btn">+ Add Service</button>
+              <button type="button" class="btn btn-primary" id="admin-save-btn">Save All Changes</button>
+            </div>
+          </div>
+          <div class="form-status" id="admin-save-status" role="status"></div>
+          <div id="admin-services-list" class="admin-services-list"></div>
+        </div>
+
+        <!-- ============ FONTS ============ -->
+        <div id="admin-panel-fonts" class="admin-panel" style="display:none">
           <div class="admin-dashboard-head">
             <div>
               <div class="eyebrow">Admin</div>
               <h2>Fonts</h2>
-              <p class="section-sub">Pick from a curated set of web fonts, or upload your own (.woff2 / .woff / .ttf, under ~450KB).</p>
+              <p class="section-sub">Only fonts that exist as files in this site's <code>/fonts</code> folder can show up here — nothing is uploaded through this panel. Push new .woff2 files to GitHub, run <code>node scripts/generate-font-manifest.mjs</code>, redeploy, and they'll appear in the lists below.</p>
             </div>
           </div>
           <div class="admin-form-grid">
@@ -167,25 +202,40 @@
               <select id="font-body-select" class="form-input"></select>
             </div>
           </div>
-          <div class="admin-upload-list" id="custom-fonts-list"></div>
-          <div class="admin-hero-upload">
-            <label class="btn btn-secondary" for="font-file-input">Upload Font&hellip;</label>
-            <input type="file" id="font-file-input" accept=".woff,.woff2,.ttf,.otf" style="display:none">
-          </div>
-          <div class="form-status" id="font-upload-status" role="status"></div>
 
-          <!-- Mode toggle shared by Colors + Glass -->
-          <div class="admin-dashboard-head" style="margin-top:52px">
+          <div class="admin-dashboard-head" style="margin-top:44px">
+            <div>
+              <div class="eyebrow">Admin</div>
+              <h3>Bengali Font</h3>
+              <p class="section-sub">Used automatically when a visitor switches the site language to Bangla. "Noto Sans Bengali" always works (loaded from Google Fonts) — anything else needs its files added to <code>/fonts</code> the same way.</p>
+            </div>
+          </div>
+          <div class="admin-form-grid">
+            <div class="form-group">
+              <label class="form-label" for="font-bengali-select">Bengali Font</label>
+              <select id="font-bengali-select" class="form-input"></select>
+            </div>
+          </div>
+
+          <div class="form-status" id="fonts-status" role="status" style="margin-top:20px"></div>
+          <button type="button" class="btn btn-primary" id="fonts-save-btn">Save Fonts</button>
+        </div>
+
+        <!-- ============ COLORS & GLASS ============ -->
+        <div id="admin-panel-colors" class="admin-panel" style="display:none">
+          <div class="admin-dashboard-head">
             <div>
               <div class="eyebrow">Admin</div>
               <h2>Colors &amp; Glass Effect</h2>
-              <p class="section-sub">Set independently for light and dark mode — visitors' devices decide which one they see.</p>
+              <p class="section-sub">Set independently for light and dark mode — visitors' devices decide which one they see. Changes preview instantly on this page (the ticker bar and navbar above are live).</p>
             </div>
             <div class="admin-dashboard-actions">
-              <div class="device-btn-group" id="appearance-mode-toggle">
-                <button type="button" class="device-btn is-active" data-mode="light">☀️ Light Mode</button>
-                <button type="button" class="device-btn" data-mode="dark">🌙 Dark Mode</button>
-              </div>
+              <button type="button" class="admin-mode-switch" id="appearance-mode-toggle" role="switch" aria-checked="false" aria-label="Editing light mode — click for dark mode">
+                <span class="admin-mode-switch-thumb">
+                  <svg class="icon-mode-sun" viewBox="0 0 512 512" fill="currentColor" aria-hidden="true"><circle cx="256" cy="256" r="80" fill="none" stroke="currentColor" stroke-width="68"/><circle cx="256" cy="60" r="30"/><circle cx="393" cy="119" r="30"/><circle cx="452" cy="256" r="30"/><circle cx="393" cy="393" r="30"/><circle cx="256" cy="452" r="30"/><circle cx="119" cy="393" r="30"/><circle cx="60" cy="256" r="30"/><circle cx="119" cy="119" r="30"/></svg>
+                  <svg class="icon-mode-moon" viewBox="0 0 512 512" fill="currentColor" aria-hidden="true"><path d="M452 321a196 196 0 01-247-247A196 196 0 10452 321z"/></svg>
+                </span>
+              </button>
             </div>
           </div>
 
@@ -208,26 +258,30 @@
             </div>
           </div>
 
-          <div class="admin-form-grid" style="margin-top:24px">
-            <div class="form-group">
-              <label class="form-label" for="glass-blur">Glass Blur Intensity — <span id="glass-blur-value">14px</span></label>
-              <input type="range" id="glass-blur" min="0" max="30" step="1">
-            </div>
-            <div class="form-group">
-              <label class="form-label">Glass Tint</label>
-              <div class="device-btn-group" id="glass-tint-toggle">
-                <button type="button" class="device-btn" data-tint="clear">Clear</button>
-                <button type="button" class="device-btn" data-tint="tinted">Tinted</button>
-              </div>
+          <div class="admin-dashboard-head" style="margin-top:44px">
+            <div>
+              <div class="eyebrow">Admin</div>
+              <h3>Glass Intensity</h3>
+              <p class="section-sub">One dial for the ticker bar + navbar glass — left is Clear (more see-through), right is Tinted (more opaque, higher contrast).</p>
             </div>
           </div>
+          <div class="admin-glass-slider-wrap">
+            <span class="admin-glass-slider-label">Clear</span>
+            <input type="range" id="glass-intensity" min="0" max="100" step="5">
+            <span class="admin-glass-slider-label">Tinted</span>
+          </div>
 
-          <!-- Background -->
-          <div class="admin-dashboard-head" style="margin-top:52px">
+          <div class="form-status" id="colors-status" role="status" style="margin-top:20px"></div>
+          <button type="button" class="btn btn-primary" id="colors-save-btn">Save Colors &amp; Glass</button>
+        </div>
+
+        <!-- ============ BACKGROUND ============ -->
+        <div id="admin-panel-background" class="admin-panel" style="display:none">
+          <div class="admin-dashboard-head">
             <div>
               <div class="eyebrow">Admin</div>
               <h2>Website Background</h2>
-              <p class="section-sub">Applies site-wide, behind every section (separate from the hero banner image above).</p>
+              <p class="section-sub">Applies site-wide, behind every section (separate from the hero banner image).</p>
             </div>
           </div>
           <div class="device-btn-group" id="bg-type-toggle">
@@ -273,8 +327,9 @@
             </div>
           </div>
 
-          <div class="form-status" id="appearance-status" role="status" style="margin-top:20px"></div>
-          <button type="button" class="btn btn-primary" id="appearance-save-btn" style="margin-top:6px">Save Appearance</button>
+          <div class="form-status" id="background-status" role="status" style="margin-top:20px"></div>
+          <button type="button" class="btn btn-primary" id="background-save-btn">Save Background</button>
+        </div>
 
         </div>
       </div>

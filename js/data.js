@@ -462,7 +462,7 @@ export const defaultSiteSettings = {
   fonts: {
     heading: "Montserrat",
     body: "Montserrat",
-    customFonts: [],
+    bengali: "Kalpurush",
   },
   colors: {
     light: { accent: "#e4342f", accent2: "#2f6fed", heading: "#0b1b33", body: "#2c3546" },
@@ -477,7 +477,11 @@ export const defaultSiteSettings = {
     image: null,
   },
   glass: {
-    light: { blur: 14, tint: "clear" },
-    dark: { blur: 14, tint: "clear" },
+    light: { intensity: 40 },
+    dark: { intensity: 40 },
+  },
+  heroPosition: {
+    desktop: 100,
+    mobile: 70,
   },
 };

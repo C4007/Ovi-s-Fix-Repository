@@ -236,49 +236,150 @@
   }
 }
 
-/* ---- Tabs ---- */
-.admin-tabs {
+/* ---- Sidebar shell ---- */
+.admin-shell {
+  display: grid;
+  grid-template-columns: 200px 1fr;
+  gap: 40px;
+  align-items: start;
+}
+
+.admin-sidebar {
   display: flex;
-  gap: 8px;
-  margin-bottom: 30px;
-  border-bottom: 1px solid var(--border-soft);
-  padding-bottom: 0;
+  flex-direction: column;
+  gap: 2px;
+  position: sticky;
+  top: calc(var(--nav-height) + var(--ticker-bar-height) + 24px);
+  border-right: 1px solid var(--border-soft);
+  padding-right: 20px;
 }
 
-.admin-tab-btn {
-  padding: 10px 4px;
-  margin-bottom: -1px;
-  font-size: var(--fs-body);
-  font-weight: 600;
-  color: var(--text-muted);
-  border-bottom: 2px solid transparent;
-  transition: color var(--t-fast) var(--ease-out), border-color var(--t-fast) var(--ease-out);
-}
-
-.admin-tab-btn + .admin-tab-btn {
-  margin-left: 22px;
-}
-
-.admin-tab-btn:hover {
-  color: var(--text-heading);
-}
-
-.admin-tab-btn.is-active {
-  color: var(--signal-red);
-  border-bottom-color: var(--signal-red);
-}
-
-.admin-appearance-banner {
-  padding: 14px 18px;
+.admin-side-btn {
+  text-align: left;
+  padding: 10px 14px;
   border-radius: var(--radius-md);
   font-size: var(--fs-body-sm);
-  color: var(--text-body);
-  margin-bottom: 34px;
+  font-weight: 600;
+  color: var(--text-muted);
+  transition: background var(--t-fast) var(--ease-out), color var(--t-fast) var(--ease-out);
 }
 
-.admin-appearance-banner strong {
-  color: var(--circuit-blue);
+.admin-side-btn:hover {
+  color: var(--text-heading);
+  background: var(--glass-bg-strong);
 }
+
+.admin-side-btn.is-active {
+  color: var(--signal-red);
+  background: var(--glass-bg-strong);
+}
+
+.admin-panels {
+  min-width: 0;
+}
+
+.admin-panel h3 {
+  font-size: var(--fs-h4, 1.1rem);
+  color: var(--text-heading);
+  margin: 0 0 4px;
+}
+
+@media (max-width: 860px) {
+  .admin-shell {
+    grid-template-columns: 1fr;
+    gap: 20px;
+  }
+
+  .admin-sidebar {
+    position: static;
+    flex-direction: row;
+    flex-wrap: wrap;
+    border-right: none;
+    border-bottom: 1px solid var(--border-soft);
+    padding-right: 0;
+    padding-bottom: 16px;
+  }
+}
+
+/* ---- Animated Light/Dark mode switch (Colors & Glass panel) ----
+   A single sliding pill, not two separate buttons — the thumb carries
+   both icons stacked on top of each other and cross-fades/rotates
+   between them as it slides, similar to an iOS-style toggle. */
+.admin-mode-switch {
+  position: relative;
+  width: 64px;
+  height: 32px;
+  border-radius: 999px;
+  border: 1px solid var(--border-soft);
+  background: var(--glass-bg-strong);
+  padding: 2px;
+  cursor: pointer;
+  flex-shrink: 0;
+}
+
+.admin-mode-switch-thumb {
+  position: relative;
+  width: 26px;
+  height: 26px;
+  border-radius: 50%;
+  background: #f6f5f1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transform: translateX(0);
+  box-shadow: 0 2px 6px rgba(11, 27, 51, 0.3);
+  transition: transform 320ms var(--ease-spring), background 320ms var(--ease-out);
+}
+
+.admin-mode-switch[aria-checked="true"] .admin-mode-switch-thumb {
+  transform: translateX(32px);
+  background: #10192b;
+}
+
+.admin-mode-switch-thumb svg {
+  position: absolute;
+  width: 16px;
+  height: 16px;
+  transition: opacity 260ms var(--ease-out), transform 320ms var(--ease-spring);
+}
+
+.icon-mode-sun {
+  color: #10192b;
+  opacity: 1;
+  transform: rotate(0deg) scale(1);
+}
+
+.icon-mode-moon {
+  color: #ffffff;
+  opacity: 0;
+  transform: rotate(90deg) scale(0.4);
+}
+
+.admin-mode-switch[aria-checked="true"] .icon-mode-sun {
+  opacity: 0;
+  transform: rotate(-90deg) scale(0.4);
+}
+
+.admin-mode-switch[aria-checked="true"] .icon-mode-moon {
+  opacity: 1;
+  transform: rotate(0deg) scale(1);
+}
+
+/* ---- Single Clear <-> Tinted glass slider ---- */
+.admin-glass-slider-wrap {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  max-width: 480px;
+}
+
+.admin-glass-slider-label {
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--text-muted);
+  flex-shrink: 0;
+}
+
 
 /* ---- Reusable pill button-group (device preview toggle, mode toggle,
    background-type toggle, glass-tint toggle) ---- */
@@ -346,38 +447,13 @@
   text-transform: uppercase;
 }
 
-/* ---- Uploaded custom fonts list ---- */
-.admin-upload-list {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 8px;
-  margin-top: 16px;
-}
-
-.admin-upload-chip {
-  display: flex;
-  align-items: center;
-  gap: 8px;
-  padding: 7px 8px 7px 14px;
-  border-radius: var(--radius-pill);
+.section-sub code {
+  font-family: var(--font-mono);
+  font-size: 0.85em;
   background: var(--glass-bg-strong);
   border: 1px solid var(--border-soft);
-  font-size: 12px;
-  color: var(--text-body-key);
-}
-
-.admin-upload-chip button {
-  width: 20px;
-  height: 20px;
-  border-radius: 50%;
-  color: var(--text-muted);
-  font-size: 14px;
-  line-height: 1;
-}
-
-.admin-upload-chip button:hover {
-  background: var(--signal-red);
-  color: #ffffff;
+  border-radius: 4px;
+  padding: 1px 6px;
 }
 
 input[type="range"] {
