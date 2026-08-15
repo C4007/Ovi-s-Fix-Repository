@@ -1,0 +1,194 @@
+{
+  "fonts": [
+    {
+      "family": "Montserrat",
+      "files": [
+        {
+          "weight": 100,
+          "style": "italic",
+          "file": "Montserrat-ThinItalic.woff2"
+        },
+        {
+          "weight": 100,
+          "style": "normal",
+          "file": "Montserrat-Thin.woff2"
+        },
+        {
+          "weight": 200,
+          "style": "italic",
+          "file": "Montserrat-ExtraLightItalic.woff2"
+        },
+        {
+          "weight": 200,
+          "style": "normal",
+          "file": "Montserrat-ExtraLight.woff2"
+        },
+        {
+          "weight": 300,
+          "style": "italic",
+          "file": "Montserrat-LightItalic.woff2"
+        },
+        {
+          "weight": 300,
+          "style": "normal",
+          "file": "Montserrat-Light.woff2"
+        },
+        {
+          "weight": 400,
+          "style": "italic",
+          "file": "Montserrat-Italic.woff2"
+        },
+        {
+          "weight": 400,
+          "style": "normal",
+          "file": "Montserrat-Regular.woff2"
+        },
+        {
+          "weight": 500,
+          "style": "italic",
+          "file": "Montserrat-MediumItalic.woff2"
+        },
+        {
+          "weight": 500,
+          "style": "normal",
+          "file": "Montserrat-Medium.woff2"
+        },
+        {
+          "weight": 600,
+          "style": "italic",
+          "file": "Montserrat-SemiBoldItalic.woff2"
+        },
+        {
+          "weight": 600,
+          "style": "normal",
+          "file": "Montserrat-SemiBold.woff2"
+        },
+        {
+          "weight": 700,
+          "style": "italic",
+          "file": "Montserrat-BoldItalic.woff2"
+        },
+        {
+          "weight": 700,
+          "style": "normal",
+          "file": "Montserrat-Bold.woff2"
+        },
+        {
+          "weight": 800,
+          "style": "italic",
+          "file": "Montserrat-ExtraBoldItalic.woff2"
+        },
+        {
+          "weight": 800,
+          "style": "normal",
+          "file": "Montserrat-ExtraBold.woff2"
+        },
+        {
+          "weight": 900,
+          "style": "italic",
+          "file": "Montserrat-BlackItalic.woff2"
+        },
+        {
+          "weight": 900,
+          "style": "normal",
+          "file": "Montserrat-Black.woff2"
+        }
+      ]
+    },
+    {
+      "family": "Poppins",
+      "files": [
+        {
+          "weight": 100,
+          "style": "italic",
+          "file": "Poppins-ThinItalic.woff2"
+        },
+        {
+          "weight": 100,
+          "style": "normal",
+          "file": "Poppins-Thin.woff2"
+        },
+        {
+          "weight": 200,
+          "style": "italic",
+          "file": "Poppins-ExtraLightItalic.woff2"
+        },
+        {
+          "weight": 200,
+          "style": "normal",
+          "file": "Poppins-ExtraLight.woff2"
+        },
+        {
+          "weight": 300,
+          "style": "italic",
+          "file": "Poppins-LightItalic.woff2"
+        },
+        {
+          "weight": 300,
+          "style": "normal",
+          "file": "Poppins-Light.woff2"
+        },
+        {
+          "weight": 400,
+          "style": "italic",
+          "file": "Poppins-Italic.woff2"
+        },
+        {
+          "weight": 400,
+          "style": "normal",
+          "file": "Poppins-Regular.woff2"
+        },
+        {
+          "weight": 500,
+          "style": "italic",
+          "file": "Poppins-MediumItalic.woff2"
+        },
+        {
+          "weight": 500,
+          "style": "normal",
+          "file": "Poppins-Medium.woff2"
+        },
+        {
+          "weight": 600,
+          "style": "italic",
+          "file": "Poppins-SemiBoldItalic.woff2"
+        },
+        {
+          "weight": 600,
+          "style": "normal",
+          "file": "Poppins-SemiBold.woff2"
+        },
+        {
+          "weight": 700,
+          "style": "italic",
+          "file": "Poppins-BoldItalic.woff2"
+        },
+        {
+          "weight": 700,
+          "style": "normal",
+          "file": "Poppins-Bold.woff2"
+        },
+        {
+          "weight": 800,
+          "style": "italic",
+          "file": "Poppins-ExtraBoldItalic.woff2"
+        },
+        {
+          "weight": 800,
+          "style": "normal",
+          "file": "Poppins-ExtraBold.woff2"
+        },
+        {
+          "weight": 900,
+          "style": "italic",
+          "file": "Poppins-BlackItalic.woff2"
+        },
+        {
+          "weight": 900,
+          "style": "normal",
+          "file": "Poppins-Black.woff2"
+        }
+      ]
+    }
+  ]
+}
