@@ -188,6 +188,12 @@
           "style": "normal",
           "file": "Poppins-Black.woff2"
         }
+        {
+           
+          "weight": 1000,
+          "style": "normal",
+          "file": "kalpurush.woff2"
+        }
       ]
     }
   ]
