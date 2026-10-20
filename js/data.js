@@ -327,6 +327,35 @@ export const faq = [
 ];
 
 // ---- Terms & Conditions ---------------------------------------------------
+/* Shop, PC Builder and pre-order terms (shown on /terms#shop-terms). Kept general on purpose —
+   adjust the wording here if your policy on advance payment, delivery or warranty is more specific. */
+export const shopTerms = [
+  {
+    en: "Prices on this website are in BDT and can change with the market. We confirm the price and availability with you before an order is final.",
+    bn: "এই ওয়েবসাইটের দাম টাকায় এবং বাজারের সাথে পরিবর্তন হতে পারে। অর্ডার চূড়ান্ত করার আগে আমরা দাম ও প্রাপ্যতা আপনার সাথে নিশ্চিত করি।",
+  },
+  {
+    en: "The service charge is free for assembling and setting up PCs ordered through this website's PC Builder or from the pre-built PC list. Terms and conditions apply.",
+    bn: "এই ওয়েবসাইটের পিসি বিল্ডার বা প্রি-বিল্ট পিসির তালিকা থেকে অর্ডার করা পিসি অ্যাসেম্বল ও সেটআপে সার্ভিস চার্জ ফ্রি। শর্ত প্রযোজ্য।",
+  },
+  {
+    en: "Pre-orders are accepted for parts that are not in stock. We tell you the expected arrival time when we confirm your order, and it can change if the supplier is delayed.",
+    bn: "যে পার্টস স্টকে নেই সেগুলোর জন্য প্রি-অর্ডার গ্রহণ করা হয়। অর্ডার নিশ্চিত করার সময় আমরা আনুমানিক আসার সময় জানাই, সরবরাহকারীর দেরি হলে তা বদলাতে পারে।",
+  },
+  {
+    en: "The PC Builder's compatibility check, wattage estimate and CPU/GPU balance are estimates to guide you. We re-check your parts before building the PC.",
+    bn: "পিসি বিল্ডারের মানানসই যাচাই, ওয়াটের হিসাব এবং CPU/GPU ভারসাম্য আপনাকে পথ দেখানোর জন্য আনুমানিক হিসাব। পিসি বানানোর আগে আমরা আপনার পার্টস আবার যাচাই করি।",
+  },
+  {
+    en: "Product warranty follows the terms of the brand or importer. Please keep your invoice.",
+    bn: "পণ্যের ওয়ারেন্টি ব্র্যান্ড বা আমদানিকারকের শর্ত অনুযায়ী প্রযোজ্য। অনুগ্রহ করে আপনার ইনভয়েস সংরক্ষণ করুন।",
+  },
+  {
+    en: "Offers and discounts are valid for the dates shown, while stock lasts.",
+    bn: "অফার ও ছাড় দেখানো তারিখ পর্যন্ত এবং স্টক থাকা পর্যন্ত প্রযোজ্য।",
+  },
+];
+
 export const terms = [
   {
     en: "Please back up your important files before giving us your device.",
@@ -432,7 +461,7 @@ export const configurator = {
 // FALLBACK — same pattern as defaultServices/defaultTicker above. Live
 // data is admin-uploaded at /admin.html (with strict resolution
 // validation) and fetched from /api/hero.
-export const defaultHeroImage = "images/hero-banner.webp";
+export const defaultHeroImage = "/images/hero-banner.webp"; // absolute: a relative path inside a CSS variable resolves against the stylesheet folder (/css/) and 404s
 
 // ---- Hero ticker lines ------------------------------------------------
 // FALLBACK dataset — same pattern as defaultServices above. Live data is

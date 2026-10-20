@@ -52,7 +52,9 @@ function applyStaticText(lang) {
     if (typeof value === "string") el.setAttribute("aria-label", value);
   });
 
-  if (dict.meta) {
+  // Pages with their own title/description (the shop pages) mark <html data-custom-title>
+  // and set them from JS — the generic homepage meta below must not overwrite those.
+  if (dict.meta && !document.documentElement.hasAttribute("data-custom-title")) {
     if (dict.meta.title) document.title = dict.meta.title;
     const metaDesc = document.querySelector('meta[name="description"]');
     if (metaDesc && dict.meta.description) metaDesc.setAttribute("content", dict.meta.description);

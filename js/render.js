@@ -5,13 +5,15 @@
    "ovisfix:languagechange" event, so containers are safe to fully rebuild.
    ========================================================================== */
 
-import { defaultServices, defaultTicker, defaultHeroImage, defaultSiteSettings, comparison, whyUs, faq, terms, stats, configurator } from "./data.js";
+import { defaultServices, defaultTicker, defaultHeroImage, defaultSiteSettings, comparison, whyUs, faq, terms, shopTerms, stats, configurator } from "./data.js";
 import { translations } from "./translations.js";
 import { icon } from "./icons.js";
 import { getCurrentLanguage } from "./language.js";
 import { observeReveal, prefersReducedMotion } from "./animations.js";
 import { applySiteSettings } from "./site-settings.js";
 import { initAdaptiveGlassText } from "./glass-adapt.js";
+
+const escapeAttr = (v) => String(v ?? "").replace(/[&<>"']/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c]));
 
 /* ---------------------------------------------------------------------------
    Services data: fetched live from /api/services (admin-editable, backed by
@@ -21,7 +23,7 @@ import { initAdaptiveGlassText } from "./glass-adapt.js";
    --------------------------------------------------------------------------- */
 let cachedServices = null;
 
-async function loadServices() {
+export async function loadServices() {
   if (cachedServices) return cachedServices;
   try {
     const res = await fetch("/api/services", { cache: "no-store" });
@@ -58,7 +60,7 @@ function serviceCard(service, lang, dict, index) {
 
   const mediaMarkup = isFree
     ? `<div class="service-card-image">${icon("report")}</div>`
-    : `<div class="service-card-image"><img src="images/${service.image}" alt="${service.title.en}" loading="lazy" width="400" height="250"></div>`;
+    : `<div class="service-card-image"><img src="/images/${escapeAttr(service.image)}" alt="${escapeAttr(service.title.en)}" loading="lazy" width="400" height="250"></div>`;
 
   return `
     <article class="service-card glass reveal${isFree ? " is-free" : ""}" style="--reveal-delay:${staggerDelay(index)}ms" data-service-title="${service.title[lang].replace(/"/g, "&quot;")}">
@@ -203,7 +205,7 @@ export function renderConfigurator() {
       (mode, i) => `
       <article class="mode-card glass reveal" style="--reveal-delay:${staggerDelay(i)}ms">
         <div class="mode-card-image" data-mode="${mode.id}">
-          <img src="images/${mode.image}" alt="${mode.title.en}" loading="lazy">
+          <img src="/images/${escapeAttr(mode.image)}" alt="${escapeAttr(mode.title.en)}" loading="lazy">
           <span class="mode-badge">${dict.configurator.comingSoonBadge}</span>
         </div>
         <div class="mode-card-body">
@@ -225,6 +227,16 @@ export function renderConfigurator() {
 /* ---------------------------------------------------------------------------
    Terms (terms.html only)
    --------------------------------------------------------------------------- */
+export function renderShopTerms() {
+  const container = document.getElementById("shop-terms-list");
+  if (!container) return;
+  const { lang } = t();
+  container.innerHTML = shopTerms
+    .map((item, i) => `
+      <div class="terms-item glass"><span class="terms-index mono">0${i + 1}</span><p>${item[lang]}</p></div>`)
+    .join("");
+}
+
 export function renderTerms() {
   const container = document.getElementById("terms-list");
   if (!container) return;
@@ -245,7 +257,7 @@ export function renderTerms() {
 
 let cachedTicker = null;
 
-async function loadTicker() {
+export async function loadTicker() {
   if (cachedTicker) return cachedTicker;
   try {
     const res = await fetch("/api/ticker", { cache: "no-store" });
@@ -283,7 +295,7 @@ async function loadHeroImage() {
 
 let cachedSiteSettings = null;
 
-async function loadSiteSettings() {
+export async function loadSiteSettings() {
   if (cachedSiteSettings) return cachedSiteSettings;
   try {
     const res = await fetch("/api/settings", { cache: "no-store" });
@@ -420,6 +432,9 @@ function runAdaptiveGlassForCurrentTheme(siteSettings, heroImages) {
   initAdaptiveGlassText(siteSettings, heroSrc);
 }
 
+let glassListenerAdded = false;
+let glassArgs = null;
+
 export async function renderAll() {
   // Fetched in parallel (not sequentially awaited) — the hero image and
   // ticker have nothing to do with services data, so there's no reason
@@ -437,11 +452,11 @@ export async function renderAll() {
   renderTicker(ticker);
   renderHeroImage(heroImages);
   renderServices(svc);
-  renderConfigurator();
   renderComparison(svc);
   renderWhyUs();
   renderFAQ();
   renderTerms();
+  renderShopTerms();
 
   runAdaptiveGlassForCurrentTheme(siteSettings, heroImages);
   // The banner + page background can differ between light and dark (a
@@ -449,7 +464,13 @@ export async function renderAll() {
   // itself theme-dependent) — re-sample for whichever is now showing
   // whenever the visitor flips the toggle, instead of only ever checking
   // the theme that was active on first paint.
-  document.addEventListener("ovisfix:themechange", () => {
-    runAdaptiveGlassForCurrentTheme(siteSettings, heroImages);
-  });
+  // (Registered once only — renderAll() runs again on every language switch, and a
+  // listener added each time used to pile up and re-sample the glass N times per toggle.)
+  glassArgs = { siteSettings, heroImages };
+  if (!glassListenerAdded) {
+    glassListenerAdded = true;
+    document.addEventListener("ovisfix:themechange", () => {
+      if (glassArgs) runAdaptiveGlassForCurrentTheme(glassArgs.siteSettings, glassArgs.heroImages);
+    });
+  }
 }

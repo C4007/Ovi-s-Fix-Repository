@@ -42,6 +42,6 @@ export function initMobileMenu() {
   });
 
   window.addEventListener("resize", () => {
-    if (window.innerWidth > 860) close();
+    if (window.innerWidth > 940) close();
   });
 }

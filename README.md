@@ -1,296 +1,153 @@
-# Ovi's Fix — Website
+# Ovi's Fix — website
 
-A bilingual (English / Bangla), light & dark mode website for Ovi's Fix
-computer repair services in Keraniganj, Dhaka. Plain HTML/CSS/JS — **no
-build step, no framework** — plus serverless functions for the contact
-form and a password-protected admin panel for managing services live.
+Computer shop, PC Builder and repair service for **Ovi's Fix** (Barisur, Keraniganj, Dhaka).
+Plain HTML, CSS and JavaScript — **no build step** — plus a few small serverless functions for the
+admin panel, saved data (Upstash Redis) and the contact form. Works in English and Bangla, light and dark.
 
----
+## Pages
 
-## 1. What's in here
+| Link | What it is |
+| --- | --- |
+| `/` → `/home` | New landing page: Shop or Service, the free-service promise, a live example build sheet, categories, PC Builder, pre-built PCs, offers |
+| `/shop` | Shop home: categories, offers, pre-built PCs, popular picks |
+| `/shop/components`, `/shop/laptops`, `/shop/monitors`, `/shop/accessories`, `/shop/networking`, `/shop/power`, `/shop/software` | One page per category, with sub-category chips |
+| `/shop/components/processor`, `/shop/components/ssd`, … | One page per sub-category (26 in total), each with its own filters |
+| `/components` | **Stock & price list**: everything you stock or can pre-order, in one searchable, printable table |
+| `/pc-builder` | **PC Builder (Beta)**: motherboard first, fit checks, estimated wattage, CPU/GPU balance, save / print / image |
+| `/builds` | Pre-built budget PCs with photos |
+| `/offers` | Offers, perks and every discounted product |
+| `/product?id=…` | One product with specs |
+| `/cart` | Cart → order on WhatsApp or send an order request |
+| `/service` | The original repair-service site (hero, services, compare, why us, FAQ, contact) |
+| `/terms` | Terms & conditions (now with shop, pre-order and PC Builder terms) |
+| `/admin` | Admin panel |
 
-```
-ovis-fix-website/
-├── index.html              Main landing page
-├── terms.html                Terms & Conditions page
-├── admin.html                 Admin panel (password-protected)
-├── css/                        variables, base, components, animations, responsive, admin
-├── js/
-│   ├── data.js                  Bilingual content: default services, comparison, FAQ, terms, configurator
-│   ├── translations.js           UI chrome strings (nav, buttons, labels) — en + bn
-│   ├── render.js                  Builds the dynamic sections; fetches live services with fallback
-│   ├── admin.js                    Admin panel logic (login, edit, save)
-│   ├── theme.js / language.js       Dark/light + EN/BN toggles
-│   ├── navbar.js / animations.js     Mobile menu, scroll reveal, parallax, loading screen
-│   ├── contact-form.js               Contact form validation + submit
-│   └── icons.js                       Self-contained SVG icon set
-├── images/                    Photos, logo, generated favicons
-├── lib/                         Shared backend logic (see §7) — used by BOTH platforms below
-├── api/                          Vercel serverless functions
-│   ├── contact.js, services.js, ticker.js, hero.js
-│   └── admin/  login.js, logout.js, check.js, services.js, ticker.js, hero.js
-├── functions/api/                 Cloudflare Pages Functions — same endpoints, same lib/
-├── vercel.json                     Clean URLs (so /terms works, not just /terms.html)
-└── .env.example                     Every environment variable you'll need, explained
-```
-
-You only need **one** of `api/` or `functions/api/` depending where you
-deploy — both read from the same `lib/` folder, so keeping both around
-costs nothing and means you can switch hosts later without rewriting
-anything.
-
----
-
-## 2. Preview it locally
+## Run it on your computer
 
 ```bash
-npx serve . -l 3000
+npm run dev        # http://localhost:3000   (needs Node 18+, nothing to install)
 ```
 
-Visit `http://localhost:3000`. The contact form and admin panel will show
-friendly "not configured yet" messages until you set up the environment
-variables below — everything else works immediately.
+This starts a local copy of the live site. Products, offers and photos you save in the admin panel are kept
+in a small file, `.dev-data.json` (delete it to start fresh). **Admin password on your computer: `dev`.**
 
----
+Other commands: `npm run pages` (rebuild the page files after adding a category) and
+`npm run check` (health check: data, pages, English + Bangla text, function count).
 
-## 3. Deploy to Vercel
+## Put it online
 
-1. Push this folder to a GitHub repo.
-2. On [vercel.com](https://vercel.com) → **Add New → Project** → import that repo.
-3. Framework preset: **Other**. Leave build command empty, output directory `.`
-   Vercel auto-detects `api/*.js` as serverless functions — no config needed
-   beyond the included `vercel.json` (which just enables clean URLs).
-4. Add the environment variables from `.env.example` under **Settings →
-   Environment Variables**.
-5. Deploy.
+The site runs on **Vercel** or **Cloudflare Pages**. Set these in the host's *Environment Variables* (see `.env.example`):
 
-## 4. Deploy to Cloudflare Pages
+| Name | What it is |
+| --- | --- |
+| `ADMIN_PASSWORD` | The admin login password — choose a long one |
+| `AUTH_SECRET` | A long random string (32+ characters) used to sign the login cookie |
+| `UPSTASH_REDIS_REST_URL`, `UPSTASH_REDIS_REST_TOKEN` | Free database from <https://upstash.com> — stores products, offers, photos, services, ticker |
+| `RESEND_API_KEY`, `TO_EMAIL`, `FROM_EMAIL` | Optional — emails for the contact form and "Send order request" |
 
-1. Push this folder to a GitHub repo.
-2. Cloudflare dashboard → **Workers & Pages → Create → Pages → Connect to Git**.
-3. Framework preset: **None**. Build command empty. Output directory `/`.
-4. Cloudflare auto-detects `functions/api/**`.
-5. Add the same environment variables under **Settings → Environment Variables**.
-6. Deploy.
+**Vercel:** import the project, add the variables, deploy. (`vercel.json` already sets clean links, the `/` → `/home`
+redirect and four URL rewrites.) The free Vercel plan allows **12 serverless functions** — this project uses exactly 12,
+which is why the photo and session endpoints share files with related ones. Keep that in mind before adding new files to `api/`
+(`npm run check` warns you).
+**Cloudflare Pages:** no build command, output directory `/`. The `functions/` folder and `_redirects` are already set up.
 
----
+**First time after deploying:** open `/admin` → **Overview** → **Save starter data to my database**. After that, everything is
+editable. Until then the site shows the starter catalog that ships in `js/shop-seed.js`.
 
-## 5. Multi-page sites, explained
+Before launch, also set the real domain in the `og:image` line of each page (search for `TODO` in the HTML files) so
+Facebook/WhatsApp link previews show the logo.
 
-You already have this working — `terms.html` and `admin.html` are proof.
-With a plain static site (no framework), **every `.html` file you put in
-the project root automatically becomes its own page**, with zero config:
+## Admin guide (`/admin`)
 
-- `index.html` → `yourdomain.com/`
-- `terms.html` → `yourdomain.com/terms` (clean URL, thanks to `vercel.json`)
-- `admin.html` → `yourdomain.com/admin`
+Changes you make are held in the browser until you press **Publish changes** (the bar at the top). Nothing goes live earlier,
+and **Discard** throws them away.
 
-When you're ready to build the real interactive PC configurator (the
-"coming soon" section on the homepage), you'd do exactly what `terms.html`
-already demonstrates: create `configurator.html`, copy the `<head>`,
-navbar, and footer markup from `index.html` (so it matches the site), add
-its own content in `<main>`, and link `js/main.js` the same way. It
-inherits every shared style and script — theme, language, animations, all
-of it — for free, because they're the same files. No routing library, no
-build step, nothing to configure. That's the whole trick.
+* **Overview** – counts, database status, links to the four price-source shops, backup & restore (download everything as one file).
+* **Products** – add / edit / delete with prices and photos. Change a price, sale price or availability right in the table.
+  Bulk actions (set availability, change prices by %, remove sale prices, delete). **Export prices (CSV)** → edit in Excel →
+  **Import prices (CSV)** is the fastest way to update many prices. Each product has *Check market price* links to the other shops.
+  The form changes with the category (an SSD shows Form Factor / Interface / Generation / Read & Write speed, an HDD shows 2.5-inch / 3.5-inch / RPM, and so on).
+* **Pre-built PCs** – name, photo, price (automatic from the parts, or fixed), highlights, and a part picker that follows the same
+  motherboard-first rule as the PC Builder, with live wattage and fit checks.
+* **Offers & discounts** – a percent or ৳ discount for everything, a category, a brand or chosen products, with start / end dates.
+  Prices on the site update by themselves; a "perk" is a banner with no price change (the free-service-charge one is a perk).
+* **Store settings** – WhatsApp number (used by the floating button), phone, email, address, social links, home headline and the
+  "service charge is free / pre-orders accepted / T&C apply" lines, in English and Bangla.
+* **Website** – the original panels: Hero banner, Ticker, Services, Fonts, Colors & Glass, Background.
 
-If a page needs its **own** backend logic (like `admin.html` does), the
-pattern is the same one used throughout this project: add a `.js` file
-under `api/` (Vercel) and a matching one under `functions/api/` (Cloudflare),
-both importing whatever they need from `lib/`.
+Availability: **In stock**, **Pre-order**, **Up coming**, **Out of stock**. Pre-order and In stock can be ordered; the starter
+products are all *Pre-order* until you mark what you really hold.
 
----
+## The PC Builder
 
-## 6. Contact form email (Resend)
+* **Start with the motherboard.** CPU, CPU cooler, RAM and casing stay locked until one is chosen. After that each list shows
+  **only parts that fit it**: the same CPU socket *and* the same platform (an Intel board never shows AMD processors), the same
+  memory type (DDR4 / DDR5) with enough free slots, a cooler that supports the socket, a casing that takes the board size, and
+  M.2 NVMe drives only if the board has an M.2 slot. If no part fits, the list says so and offers a WhatsApp message to ask you.
+* Swapping the motherboard removes the parts that no longer fit and shows exactly which ones.
+* **Estimated wattage** adds each part's real maximum power draw (+30 W for board, fans, USB). The **recommended PSU** adds 30% headroom.
+* **CPU/GPU balance** compares a performance score for the CPU and the graphics card (Ryzen 5 5600 = 100, RTX 4060 = 100) for 1080p,
+  1440p, 4K or editing. It is an estimate, and the page says so.
+* Add to cart, **Save PC** (in this browser, plus a share link), **Print**, **Screenshot** (saves a clean quote image).
 
-The form posts to `/api/contact`, using [Resend](https://resend.com) via
-plain `fetch` (no SDK, works on both hosts unchanged).
+To make a product work in the builder, fill these in on its edit form:
+Motherboard → Socket, Memory Type, Form Factor, RAM Slots · CPU → Socket (and *Power draw*, *Performance score*) ·
+RAM → RAM Type, RAM Sticks · Casing → Motherboard Support · CPU Cooler → Socket · Power Supply → Watts.
+The form will not save a product that is missing these. For CPUs and graphics cards also fill *Power draw* and *Performance score*.
 
-1. Free Resend account → **API Keys** → create one → set `RESEND_API_KEY`.
-2. Mail sends from Resend's shared test address by default, which can only
-   deliver to *your own* Resend account email until you verify a domain.
-   Verify a domain and set `FROM_EMAIL` when you're ready to go live, or
-   leave it as-is for now — replies always go to whoever filled the form in
-   either case, since `reply_to` is set automatically.
-3. `TO_EMAIL` defaults to `contact.ovisfix@gmail.com`.
+## Prices
 
-Until `RESEND_API_KEY` is set, the form shows a graceful error pointing
-people to WhatsApp/email instead of silently failing.
+The starter prices were calibrated from Star Tech, Ryans, Techland and Computer Village listings checked on **10 October 2026**.
+RAM, SSD and graphics-card prices are moving a lot right now, and some products had mixed prices across those shops, so **please
+check every price once before publishing**. A website cannot read another shop's prices live, so prices are entered by you; the
+CSV import and the "Check market price" links make that quick.
 
----
+## Languages
 
-## 7. Admin panel — manage the hero banner, ticker & services without touching code
+Everything switches between English and Bangla. **Product names and technical specs are never translated** — DDR4, DDR5, AM5,
+LGA1200, NVMe, M.2, WiFi 6, GDDR6, Windows 11, model names, sizes and speeds stay in English in both languages, and so do technical
+spec labels (Socket, Chipset, RAM Type, Resolution …). Only plain words such as colours, "Included" and S/M/L sizes have a Bangla form
+(`VALUE_BN` in `js/catalog-schema.js`). Page text lives in `js/translations.js` (original pages) and `js/i18n-shop.js` (shop pages).
 
-Visit `/admin.html`, log in, and you can:
-- **Upload a new hero banner image.** Strictly validated before it's ever
-  saved — needs to be a wide banner shape (~2.36:1, like the default
-  2560×1086), at least 1600px wide, under ~2MB. Anything else is rejected
-  right in the browser with a clear reason, before it ever reaches the
-  server.
-- Add, edit, reorder, or delete the **top ticker lines** — the strip of
-  text pinned to the top of every page, always visible.
-- Add, edit, or delete any **service** — price, bilingual title/description,
-  image filename.
+## Changing categories and filters
 
-Each section saves independently — saving one doesn't touch the others.
+Everything about categories — which sub-categories exist, which filters belong to each (e.g. SSD *Form Factor: 2.5" SATA / M.2 SATA / M.2 NVMe*,
+HDD *Form Factor: 2.5-inch / 3.5-inch*) and the PC Builder rows — is in **`js/catalog-schema.js`**. After editing it run
+`npm run pages` (creates the page files) and `npm run check`. Brand, Price and Availability filters are built in for every category.
 
-### How it works under the hood
+## Files
 
-- Services, ticker lines, and the hero image are all stored in **Upstash
-  Redis** (a serverless Redis host with a generous free tier), read
-  through a small REST API using plain `fetch` — same "no SDK" approach as
-  the contact form, so it works identically on Vercel and Cloudflare.
-- The hero image is the one exception worth understanding: it's stored as
-  a base64 data URL rather than a filename reference, since there's no
-  file/object storage wired up (that would mean a whole separate service —
-  Vercel Blob or Cloudflare R2 — which is a bigger feature on its own).
-  This works well for exactly one banner image within the strict size
-  limit above; it isn't meant to become a general media library.
-- The homepage always tries `/api/hero`, `/api/services`, and `/api/ticker`
-  first; if Upstash isn't set up yet, or a request fails for any reason,
-  it silently falls back to the bundled defaults (`images/hero-banner.webp`
-  and the defaults in `js/data.js`). **The public site can never break
-  because of the admin panel** — worst case, it just shows the defaults.
-- Logging in sets a signed, HTTP-only cookie (24-hour expiry). There's no
-  session database — the signature itself proves it's legitimate, checked
-  fresh on every request. This is deliberately simple: appropriate
-  password protection for one shop owner managing his own site, not a
-  multi-user enterprise auth system.
+```
+home.html service.html terms.html admin.html …   page files (shop pages are tiny shells made by scripts/build-pages.mjs)
+shop/…                                           /shop, /shop/<category>, /shop/<category>/<sub-category>
+css/       variables, base, components (original) · shop.css (shop, builder, cart, landing) · admin-shop.css
+js/        catalog-schema.js · shop-seed.js · shop-core.js · shop-ui.js · builder-logic.js · blocks.js · layout.js · boot.js
+js/pages/  one file per shop page (home, shop, components, offers, builds, product, cart, builder)
+js/admin/  admin panels (products, builds-offers, store, core)
+api/       Vercel functions (12)      functions/api/   same endpoints for Cloudflare Pages
+lib/       storage, sessions, validation (the server re-checks everything the admin saves)
+scripts/   dev-server.mjs · build-pages.mjs · check-site.mjs
+```
 
-### One-time setup
+## Fixed while rebuilding
 
-1. **Create the database.** Sign up at [upstash.com](https://upstash.com)
-   (free tier is plenty for this) → Create Database → Redis. Once created,
-   open its **REST API** tab and copy the `UPSTASH_REDIS_REST_URL` and
-   `UPSTASH_REDIS_REST_TOKEN` values.
-2. **Set your admin password.** Pick something long and unique — set it as
-   `ADMIN_PASSWORD`.
-3. **Set a signing secret.** Any long random string works — e.g. run
-   `openssl rand -hex 32` in a terminal, or just mash the keyboard for 40+
-   characters. Set it as `AUTH_SECRET`. You never need to remember it,
-   only paste it into your host's environment variables once.
-4. Add all four variables (`UPSTASH_REDIS_REST_URL`,
-   `UPSTASH_REDIS_REST_TOKEN`, `ADMIN_PASSWORD`, `AUTH_SECRET`) in your
-   host's dashboard (same place as `RESEND_API_KEY`), then redeploy.
-5. Visit `/admin.html`, log in, and your existing 18 services will load
-   automatically the first time (fetched from the bundled defaults) —
-   click **Save All Changes** once to write them into Upstash, and from
-   then on you're editing the live data.
+* The default hero image pointed at `/css/images/…` and 404'd (relative path inside a CSS variable).
+* Every page showed the homepage title in the browser tab; pages now keep their own title.
+* The mobile menu closed at a different width (860px) than it opens (940px).
+* The theme listener was registered again on every language switch, piling up work.
+* A malformed cookie could crash an API request.
+* A forced 1.4-second loading splash on every page is gone.
+* The admin login had no limit on wrong passwords: now 8 tries per 15 minutes per visitor.
+* Service images used unescaped text in HTML attributes.
+* `.env.example` was mentioned but missing: added.
+* The "Coming Soon" PC configurator section is replaced by the working PC Builder.
 
-**A heads-up:** I designed the Upstash integration carefully against
-their documented REST API, but couldn't test it against a real database
-from where I built this. If something doesn't connect on the first try,
-check Upstash's current REST API docs against `lib/upstash.js` — the
-shape is a simple `GET {url}/get/{key}` / `POST {url}/set/{key}` with a
-`Bearer` token, and if that's changed, it's a small, contained fix in that
-one file. Let me know and I can help sort it out.
+## Good to know
 
-### A couple of things worth knowing
-
-- **Deleting a service** that's referenced in the homepage's "Why Pay
-  More?" comparison table just makes that row quietly disappear next time
-  the page loads — it won't error out.
-- **Changing a service's ID** after it's been saved isn't recommended,
-  since the comparison table matches services by ID. The ID field is
-  read-only for existing services in the admin UI for exactly this reason
-  — it's only editable while a service is brand new and unsaved.
-- Only the **services list** is admin-editable. FAQ, the comparison
-  table's "market rate" figures, Why Us, and Terms still live in
-  `js/data.js` — edit that file directly for those (same as before).
-
----
-
-## 8. Things you'll want to personalize
-
-- **Social links** — Facebook, Instagram, and YouTube are live; LinkedIn is
-  still a placeholder (`href="#"`) in `index.html` and the footer — swap it
-  in whenever you have a profile URL.
-- **Market comparison numbers** — the "Typical Market Rate" figures in
-  `js/data.js` (`comparison` array) are rounded estimates illustrating the
-  30–50% savings claim, not verified competitor quotes. Swap in real
-  numbers whenever you've researched local competitors.
-- **Bangla copy** — I translated everything myself; worth a proofread pass
-  in `js/translations.js` and `js/data.js` before launch.
-- **Curly tagline font** — replaced with Montserrat Bold across the whole
-  site per your latest direction; the old Lobster/Space Grotesk/Poppins
-  mix is gone.
-- **Configurator image crop** — the Pre-configured Mode card's photo has
-  its crop position tuned in `css/components.css` under
-  `.mode-card-image[data-mode="preconfigured"] img` (look for the comment
-  explaining the 0–100% scale). Nudge that one number if you want more or
-  less headroom above the text baked into that photo.
-- **Open Graph image** — `index.html` points `og:image` at `images/logo.jpg`
-  as a relative path; once you have a real domain, change it to the full
-  `https://yourdomain.com/images/logo.jpg` so link previews on Facebook/
-  WhatsApp pick it up correctly.
-
-### A wording change worth knowing about
-
-The original price list described two services as installing
-"non-genuine" copies of Microsoft Office and Adobe apps. I kept both
-services and their prices, but rewrote the public copy as **"Microsoft
-Office Setup & Activation"** and **"Adobe Creative Cloud Setup"** —
-installation/activation framing rather than advertising unlicensed
-software, since that's legal exposure for the business and not something
-I'll write ad copy for either way. What you offer in person is your call;
-I just didn't want the website itself to be what's publicly marketing it.
-
----
-
-## 9. Design notes
-
-- **The hero is intentionally dark regardless of the light/dark toggle.**
-  It's a full-bleed banner image with a dark gradient scrim (`.hero-scrim`
-  in `css/components.css`) for text legibility, and its text colors are
-  hardcoded light rather than theme-variable, on purpose — a permanently
-  "cinematic" hero is common even on otherwise light sites, and it means
-  the banner image never has to fight with the toggle. Everything below
-  the hero still fully respects light/dark as before.
-- **The ticker is a fixed bar pinned above the navbar** (`.top-ticker`),
-  not part of the hero anymore — it stays visible at the very top of the
-  viewport regardless of scroll position, on every page. `--ticker-bar-height`
-  in `css/variables.css` is the single source of truth for its height;
-  everything that needs to sit below it (`.navbar`, hero padding, the
-  mobile menu's open position, `terms.html`/`admin.html` content padding)
-  reads from that variable, so resizing the bar is a one-line change.
-- **Dark mode background**: near-black (`#050608`) rather than navy-gray,
-  with three very low-opacity radial gradients (blue and a whisper of red)
-  layered on top via `body`'s background in `css/base.css` — echoes the
-  "deep black with glowing RGB lighting" look of the product photography
-  instead of a flat navy fill. Subtle enough that text contrast is
-  unaffected.
-- **Typography**: Montserrat across all English text — headings, body,
-  the brand name, hero stat numbers, and small labels ("eyebrows", table
-  headers, badges) all share it now, at different weights for hierarchy
-  (800 for the hero headline and stat numbers, 600–700 for section
-  headings and badges, 400 for eyebrow-style labels, 400–500 for body
-  copy). Bangla stays on Kalpurush throughout, untouched. Prices,
-  percentages, and the terms-page numbering keep IBM Plex Mono — a
-  deliberate, separate "this is exact data" treatment (see the ticket note
-  below), not part of the general text system.
-- **Hero ticker**: pinned to the top of every page and admin-editable
-  (§7), loops seamlessly — the line list renders twice
-  back-to-back and the CSS animation just slides by exactly one copy's
-  width, so it never visibly "jumps."
-- **Glass vs. acrylic**: desktop cards use a lighter, translucent `.glass`
-  style. The mobile popover menu uses a separate, near-opaque `.acrylic`
-  style instead — the fix for glass panels overlapping and getting
-  unreadable against whatever's scrolled behind them on small screens.
-- **Pricing "tickets"**: every price renders in monospace inside a
-  dashed-border ticket — a nod to the free "System Diagnostic Report"
-  being the site's entry point, and a signal that pricing here is exact
-  and itemized, not a vague quote.
-- Dark mode uses solid white specifically for service card and FAQ body
-  text (as requested); headlines use an off-white with a red→blue
-  gradient accent word instead, so big text doesn't compete with body copy.
-- Bangla headings get extra line-height (1.5 vs. 1.15) — Bengali
-  conjuncts and vowel signs extend further above/below the baseline than
-  Latin letters, and the tighter Latin value was clipping them against
-  ancestors with `overflow: hidden`. Tracked-out uppercase styling (used
-  on English "eyebrow" labels) is switched off for Bangla too, since the
-  script has no letter-casing and the extra spacing was breaking up
-  conjuncts.
-- Reduced-motion is respected throughout — including the stat count-up
-  animation — for anyone with "reduce motion" set at the OS level.
-
-Built for Ovi's Fix — Keraniganj, Dhaka.
+* Pages are drawn by JavaScript, like the original site, so search engines see the page shell first. The home, shop and product pages
+  have proper titles and descriptions.
+* Product photos you upload are shrunk to 900px WebP and stored in Upstash (about 60–150 KB each). For hundreds of photos consider
+  hosting them elsewhere and pasting the link into the product form.
+* Saved PCs and the cart live in the visitor's own browser.
+* Terms in `/terms` for shop orders, pre-orders and the free service charge are deliberately general — adjust the wording in
+  `js/data.js` (`shopTerms`) if your policy on advance payment, delivery time or warranty is more specific.

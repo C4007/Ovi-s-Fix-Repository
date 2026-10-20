@@ -69,6 +69,9 @@ function showDashboardView() {
   $("admin-login-view").style.display = "none";
   $("admin-dashboard-view").style.display = "";
   $("admin-logout-btn").style.display = "";
+  // The shop panels (js/admin-shop.js) start once the owner is logged in.
+  window.__ovisAdminReady = true;
+  document.dispatchEvent(new CustomEvent("ovisfix:admin-ready"));
 }
 
 /* ---------------------------------------------------------------------------
@@ -309,7 +312,7 @@ function renderHeroPreviewForCurrentTheme() {
     img.src = saved;
     meta.textContent = `Current ${heroThemeMode}-mode banner`;
   } else {
-    img.src = "images/hero-banner.webp";
+    img.src = "/images/hero-banner.webp";
     meta.textContent = heroPreviewFallbackText(heroThemeMode);
   }
   $("hero-save-btn").disabled = true;
@@ -585,7 +588,7 @@ async function loadServicesIntoDashboard() {
 /* ---------------------------------------------------------------------------
    Sidebar panel switching (Hero / Ticker / Services / Fonts / Colors / Background)
    --------------------------------------------------------------------------- */
-const ADMIN_PANELS = ["hero", "ticker", "services", "fonts", "colors", "background"];
+const ADMIN_PANELS = ["overview", "products", "builds", "offers", "store", "hero", "ticker", "services", "fonts", "colors", "background"];
 
 function switchAdminPanel(panel) {
   for (const p of ADMIN_PANELS) {
@@ -947,7 +950,7 @@ async function handleLogout() {
    Init
    --------------------------------------------------------------------------- */
 async function init() {
-  initLoadingScreen();
+  initLoadingScreen(500);
   initTheme();
   initServicesListEvents();
   initTickerListEvents();

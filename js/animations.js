@@ -39,12 +39,12 @@ export function observeReveal(elements) {
 /* ---------------------------------------------------------------------------
    Loading screen
    --------------------------------------------------------------------------- */
-export function initLoadingScreen() {
+export function initLoadingScreen(minMs = 1400) {
   const screen = document.getElementById("loading-screen");
   if (!screen) return;
 
   document.body.classList.add("no-scroll");
-  const minTime = new Promise((resolve) => setTimeout(resolve, 1400));
+  const minTime = new Promise((resolve) => setTimeout(resolve, minMs));
   const windowLoaded = new Promise((resolve) => {
     if (document.readyState === "complete") resolve();
     else window.addEventListener("load", resolve, { once: true });
