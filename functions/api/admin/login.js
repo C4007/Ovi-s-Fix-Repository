@@ -6,6 +6,7 @@
 import { createSessionToken, SESSION_COOKIE_NAME, SESSION_MAX_AGE_SECONDS } from "../../../lib/session.js";
 import { buildSetCookie } from "../../../lib/cookies.js";
 import { constantTimeEqual } from "../../../lib/crypto-utils.js";
+import { kvIncrWithTtl } from "../../../lib/upstash.js";
 
 function json(data, status, extraHeaders) {
   return new Response(JSON.stringify(data), {
@@ -31,6 +32,13 @@ export async function onRequestPost(context) {
     body = await request.json();
   } catch (err) {
     return json({ success: false, error: "Invalid request body" }, 400);
+  }
+
+  // Brute-force guard: at most 8 attempts per IP per 15 minutes (skipped if Redis isn't set up).
+  const ip = (request.headers.get("CF-Connecting-IP") || "unknown").slice(0, 64);
+  const attempts = await kvIncrWithTtl(env, `ovisfix:rl:login:${ip}`, 900);
+  if (attempts !== null && attempts > 8) {
+    return json({ success: false, error: "Too many attempts. Please wait 15 minutes and try again." }, 429);
   }
 
   const supplied = (body.password || "").toString();

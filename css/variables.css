@@ -59,8 +59,8 @@
 /* ---- Light theme (default) ---- */
 :root,
 :root[data-theme="light"] {
-  --bg: #f6f5f1;
-  --bg-alt: #eeece4;
+  --bg: #eef1f6;
+  --bg-alt: #e4e9f1;
   --surface: #ffffff;
   --surface-raised: #ffffff;
 
@@ -78,9 +78,9 @@
   --glass-bg-strong: rgba(255, 255, 255, 0.78);
   --glass-border: rgba(255, 255, 255, 0.75);
   --glass-shadow: 0 20px 60px rgba(11, 27, 51, 0.12);
-  --acrylic-bg: rgba(246, 245, 241, 0.94);
+  --acrylic-bg: rgba(238, 241, 246, 0.95);
 
-  --nav-bg: rgba(246, 245, 241, 0.7);
+  --nav-bg: rgba(238, 241, 246, 0.8);
   --nav-bg-scrolled: rgba(255, 255, 255, 0.75);
   /* Ticker bar glass — defaults to match --nav-bg-scrolled so the fixed
      top strip reads as one continuous glass panel with the navbar

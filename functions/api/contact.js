@@ -46,6 +46,7 @@ export async function onRequestPost(context) {
   const name = (body.name || "").toString().trim().slice(0, 200);
   const email = (body.email || "").toString().trim().slice(0, 200);
   const phone = (body.phone || "").toString().trim().slice(0, 40);
+  const subjectIn = (body.subject || "").toString().replace(/[\r\n]+/g, " ").trim().slice(0, 100);
   const message = (body.message || "").toString().trim().slice(0, 5000);
 
   const emailOk = !email || isValidEmail(email);
@@ -86,7 +87,7 @@ export async function onRequestPost(context) {
     const emailPayload = {
       from: fromEmail,
       to: [toEmail],
-      subject: `New website inquiry from ${name}`,
+      subject: subjectIn ? `${subjectIn} — ${name}` : `New website inquiry from ${name}`,
       html,
     };
     if (email) emailPayload.reply_to = email;
