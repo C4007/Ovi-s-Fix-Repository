@@ -1,0 +1,362 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Admin — Ovi's Fix</title>
+<meta name="robots" content="noindex, nofollow">
+<meta name="theme-color" content="#0b1b33">
+
+<link rel="icon" href="/images/favicon/favicon.ico" sizes="any">
+<link rel="icon" type="image/png" href="/images/favicon/favicon-32.png" sizes="32x32">
+
+<script>
+(function () {
+  try {
+    var stored = localStorage.getItem('ovisfix-theme');
+    var theme = (stored === 'light' || stored === 'dark')
+      ? stored
+      : (window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light');
+    document.documentElement.setAttribute('data-theme', theme);
+  } catch (e) {
+    document.documentElement.setAttribute('data-theme', 'light');
+  }
+})();
+</script>
+
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@500;600;700&display=swap" rel="stylesheet">
+
+<link rel="stylesheet" href="/css/fonts-generated.css">
+<link rel="stylesheet" href="/css/variables.css">
+<link rel="stylesheet" href="/css/base.css">
+<link rel="stylesheet" href="/css/components.css">
+<link rel="stylesheet" href="/css/animations.css">
+<link rel="stylesheet" href="/css/responsive.css">
+<link rel="stylesheet" href="/css/admin.css">
+<link rel="stylesheet" href="/css/shop.css">
+<link rel="stylesheet" href="/css/admin-shop.css">
+</head>
+<body>
+
+<div id="loading-screen">
+  <div class="loader-inner">
+    <div class="loader-mark"><img src="/images/favicon/favicon-192.png" alt="Ovi's Fix"></div>
+    <div class="loader-track"><div class="loader-bar"></div></div>
+    <div class="loader-text">Loading admin panel&hellip;</div>
+  </div>
+</div>
+
+<div class="top-ticker">
+  <div class="hero-ticker-fade">
+    <span class="hero-ticker-item">Ovi's Fix — Admin Panel</span>
+  </div>
+</div>
+
+<nav class="navbar scrolled" id="navbar">
+  <div class="container navbar-inner">
+    <a href="/admin" class="brand">
+      <div class="brand-mark"><img src="/images/favicon/favicon-192.png" alt="Ovi's Fix logo"></div>
+      <span class="brand-name">Ovi's <span>Fix</span></span>
+    </a>
+    <div class="admin-nav-label">Admin Panel</div>
+    <div class="navbar-actions">
+      <button id="theme-toggle" class="icon-btn" aria-label="Switch to dark mode" type="button">
+        <svg class="icon-sun" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="3.8"/><path d="M12 2.5v2M12 19.5v2M4.6 4.6l1.4 1.4M18 18l1.4 1.4M2.5 12h2M19.5 12h2M4.6 19.4L6 18M18 6l1.4-1.4"/></svg>
+        <svg class="icon-moon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20 14.6A8.6 8.6 0 119.4 4a7.1 7.1 0 0010.6 10.6z"/></svg>
+      </button>
+      <a href="/home" class="btn btn-ghost btn-sm" target="_blank" rel="noopener">View site</a>
+      <button type="button" class="btn btn-secondary" id="admin-logout-btn" style="display:none">Log Out</button>
+    </div>
+  </div>
+</nav>
+
+<main>
+  <section class="section" style="padding-top: calc(var(--nav-height) + var(--ticker-bar-height) + 48px); min-height: 80vh;">
+    <div class="container">
+
+      <div id="admin-login-view" class="admin-login-wrap">
+        <div class="admin-login-card glass">
+          <h1>Admin Login</h1>
+          <p>Manage your shop, prices, offers and website without touching any code.</p>
+          <form id="admin-login-form" novalidate>
+            <div class="form-group">
+              <label class="form-label" for="admin-password">Password</label>
+              <input type="password" id="admin-password" class="form-input" required autocomplete="current-password">
+            </div>
+            <button type="submit" class="btn btn-primary btn-block" id="admin-login-submit">Log In</button>
+            <div class="form-status" id="admin-login-status" role="status"></div>
+          </form>
+        </div>
+      </div>
+
+      <div id="admin-dashboard-view" class="admin-shell" style="display:none">
+        <nav class="admin-sidebar" role="tablist" aria-label="Admin sections">
+          <span class="admin-side-group">Shop</span>
+          <button type="button" class="admin-side-btn is-active" data-panel="overview">Overview</button>
+          <button type="button" class="admin-side-btn" data-panel="products">Products</button>
+          <button type="button" class="admin-side-btn" data-panel="builds">Pre-built PCs</button>
+          <button type="button" class="admin-side-btn" data-panel="offers">Offers &amp; discounts</button>
+          <button type="button" class="admin-side-btn" data-panel="store">Store settings</button>
+          <span class="admin-side-group">Website</span>
+          <button type="button" class="admin-side-btn" data-panel="hero">Hero Banner</button>
+          <button type="button" class="admin-side-btn" data-panel="ticker">Ticker</button>
+          <button type="button" class="admin-side-btn" data-panel="services">Services</button>
+          <button type="button" class="admin-side-btn" data-panel="fonts">Fonts</button>
+          <button type="button" class="admin-side-btn" data-panel="colors">Colors &amp; Glass</button>
+          <button type="button" class="admin-side-btn" data-panel="background">Background</button>
+        </nav>
+
+        <div class="admin-panels">
+        <div id="shop-publish-bar" class="a-publish" hidden></div>
+        <div id="admin-panel-overview" class="admin-panel"></div>
+        <div id="admin-panel-products" class="admin-panel" style="display:none"></div>
+        <div id="admin-panel-builds" class="admin-panel" style="display:none"></div>
+        <div id="admin-panel-offers" class="admin-panel" style="display:none"></div>
+        <div id="admin-panel-store" class="admin-panel" style="display:none"></div>
+
+        <!-- ============ HERO ============ -->
+        <div id="admin-panel-hero" class="admin-panel" style="display:none">
+          <div class="admin-dashboard-head">
+            <div>
+              <div class="eyebrow">Admin</div>
+              <h2>Hero Banner Image</h2>
+              <p class="section-sub">Separate banner per theme — visitors in light mode and dark mode can see completely different images. Needs a wide banner shape (around 2.36:1, like the default 2560×1086), at least 1600px wide, under ~2MB.</p>
+            </div>
+            <div class="admin-dashboard-actions">
+              <div class="device-btn-group" id="hero-theme-toggle">
+                <button type="button" class="device-btn is-active" data-hero-theme="light">Light Mode</button>
+                <button type="button" class="device-btn" data-hero-theme="dark">Dark Mode</button>
+              </div>
+            </div>
+          </div>
+          <div class="form-status" id="hero-status" role="status"></div>
+          <div class="admin-preview-devicebar" data-preview-for="hero-preview-wrap">
+            <button type="button" class="device-btn is-active" data-device="desktop">Desktop</button>
+            <button type="button" class="device-btn" data-device="mobile">Mobile</button>
+          </div>
+          <div class="admin-hero-preview glass" id="hero-preview-wrap">
+            <img id="hero-preview-img" alt="Current hero banner preview">
+          </div>
+          <p class="admin-id-hint" id="hero-preview-meta"></p>
+          <div class="admin-hero-upload">
+            <label class="btn btn-secondary" for="hero-file-input">Choose Image&hellip;</label>
+            <input type="file" id="hero-file-input" accept="image/*" style="display:none">
+            <button type="button" class="btn btn-primary" id="hero-save-btn" disabled>Save Hero Image</button>
+          </div>
+
+          <div class="admin-dashboard-head" style="margin-top:44px">
+            <div>
+              <div class="eyebrow">Admin</div>
+              <h3>Banner Position</h3>
+              <p class="section-sub">The image's horizontal focal point — set separately for desktop and mobile since a wide banner crops very differently on a phone screen. Applies to both light and dark banners.</p>
+            </div>
+          </div>
+          <div class="admin-form-grid">
+            <div class="form-group">
+              <label class="form-label" for="hero-pos-desktop">Desktop — <span id="hero-pos-desktop-value">100%</span> <span class="admin-id-hint">(0% left, 100% right)</span></label>
+              <input type="range" id="hero-pos-desktop" min="0" max="100" step="5">
+            </div>
+            <div class="form-group">
+              <label class="form-label" for="hero-pos-mobile">Mobile — <span id="hero-pos-mobile-value">70%</span> <span class="admin-id-hint">(0% left, 100% right)</span></label>
+              <input type="range" id="hero-pos-mobile" min="0" max="100" step="5">
+            </div>
+          </div>
+          <div class="form-status" id="hero-position-status" role="status" style="margin-top:16px"></div>
+          <button type="button" class="btn btn-primary" id="hero-position-save-btn">Save Position</button>
+        </div>
+
+        <!-- ============ TICKER ============ -->
+        <div id="admin-panel-ticker" class="admin-panel" style="display:none">
+          <div class="admin-dashboard-head">
+            <div>
+              <div class="eyebrow">Admin</div>
+              <h2>Hero Ticker</h2>
+              <p class="section-sub">The scrolling line of text pinned to the very top of every page. Add, edit, or reorder — the order here is the order it scrolls.</p>
+            </div>
+            <div class="admin-dashboard-actions">
+              <button type="button" class="btn btn-secondary" id="ticker-add-btn">+ Add Line</button>
+              <button type="button" class="btn btn-primary" id="ticker-save-btn">Save Ticker</button>
+            </div>
+          </div>
+          <div class="form-status" id="ticker-save-status" role="status"></div>
+          <div id="ticker-lines-list" class="admin-services-list"></div>
+        </div>
+
+        <!-- ============ SERVICES ============ -->
+        <div id="admin-panel-services" class="admin-panel" style="display:none">
+          <div class="admin-dashboard-head">
+            <div>
+              <div class="eyebrow">Admin</div>
+              <h2>Manage Services</h2>
+              <p class="section-sub">Changes go live on the homepage as soon as you save. New services need a unique ID — it auto-fills, but feel free to edit it before your first save.</p>
+            </div>
+            <div class="admin-dashboard-actions">
+              <button type="button" class="btn btn-secondary" id="admin-add-btn">+ Add Service</button>
+              <button type="button" class="btn btn-primary" id="admin-save-btn">Save All Changes</button>
+            </div>
+          </div>
+          <div class="form-status" id="admin-save-status" role="status"></div>
+          <div id="admin-services-list" class="admin-services-list"></div>
+        </div>
+
+        <!-- ============ FONTS ============ -->
+        <div id="admin-panel-fonts" class="admin-panel" style="display:none">
+          <div class="admin-dashboard-head">
+            <div>
+              <div class="eyebrow">Admin</div>
+              <h2>Fonts</h2>
+              <p class="section-sub">Only fonts that exist as files in this site's <code>/fonts</code> folder can show up here — nothing is uploaded through this panel. Push new .woff2 files to GitHub, run <code>node scripts/generate-font-manifest.mjs</code>, redeploy, and they'll appear in the lists below.</p>
+            </div>
+          </div>
+          <div class="admin-form-grid">
+            <div class="form-group">
+              <label class="form-label" for="font-heading-select">Heading Font</label>
+              <select id="font-heading-select" class="form-input"></select>
+            </div>
+            <div class="form-group">
+              <label class="form-label" for="font-body-select">Body Font</label>
+              <select id="font-body-select" class="form-input"></select>
+            </div>
+          </div>
+
+          <div class="admin-dashboard-head" style="margin-top:44px">
+            <div>
+              <div class="eyebrow">Admin</div>
+              <h3>Bengali Font</h3>
+              <p class="section-sub">Used automatically when a visitor switches the site language to Bangla. "Noto Sans Bengali" always works (loaded from Google Fonts) — anything else needs its files added to <code>/fonts</code> the same way.</p>
+            </div>
+          </div>
+          <div class="admin-form-grid">
+            <div class="form-group">
+              <label class="form-label" for="font-bengali-select">Bengali Font</label>
+              <select id="font-bengali-select" class="form-input"></select>
+            </div>
+          </div>
+
+          <div class="form-status" id="fonts-status" role="status" style="margin-top:20px"></div>
+          <button type="button" class="btn btn-primary" id="fonts-save-btn">Save Fonts</button>
+        </div>
+
+        <!-- ============ COLORS & GLASS ============ -->
+        <div id="admin-panel-colors" class="admin-panel" style="display:none">
+          <div class="admin-dashboard-head">
+            <div>
+              <div class="eyebrow">Admin</div>
+              <h2>Colors &amp; Glass Effect</h2>
+              <p class="section-sub">Set independently for light and dark mode — visitors' devices decide which one they see. Changes preview instantly on this page (the ticker bar and navbar above are live).</p>
+            </div>
+            <div class="admin-dashboard-actions">
+              <button type="button" class="admin-mode-switch" id="appearance-mode-toggle" role="switch" aria-checked="false" aria-label="Editing light mode — click for dark mode">
+                <span class="admin-mode-switch-thumb">
+                  <svg class="icon-mode-sun" viewBox="0 0 512 512" fill="currentColor" aria-hidden="true"><circle cx="256" cy="256" r="80" fill="none" stroke="currentColor" stroke-width="68"/><circle cx="256" cy="60" r="30"/><circle cx="393" cy="119" r="30"/><circle cx="452" cy="256" r="30"/><circle cx="393" cy="393" r="30"/><circle cx="256" cy="452" r="30"/><circle cx="119" cy="393" r="30"/><circle cx="60" cy="256" r="30"/><circle cx="119" cy="119" r="30"/></svg>
+                  <svg class="icon-mode-moon" viewBox="0 0 512 512" fill="currentColor" aria-hidden="true"><path d="M452 321a196 196 0 01-247-247A196 196 0 10452 321z"/></svg>
+                </span>
+              </button>
+            </div>
+          </div>
+
+          <div class="admin-form-grid">
+            <div class="form-group">
+              <label class="form-label" for="color-accent">Accent (buttons, price, "FIX")</label>
+              <div class="admin-color-input"><input type="color" id="color-accent-picker"><input type="text" id="color-accent" class="form-input" maxlength="7"></div>
+            </div>
+            <div class="form-group">
+              <label class="form-label" for="color-accent2">Accent 2 (links, icons)</label>
+              <div class="admin-color-input"><input type="color" id="color-accent2-picker"><input type="text" id="color-accent2" class="form-input" maxlength="7"></div>
+            </div>
+            <div class="form-group">
+              <label class="form-label" for="color-heading">Heading Text</label>
+              <div class="admin-color-input"><input type="color" id="color-heading-picker"><input type="text" id="color-heading" class="form-input" maxlength="7"></div>
+            </div>
+            <div class="form-group">
+              <label class="form-label" for="color-body">Body Text</label>
+              <div class="admin-color-input"><input type="color" id="color-body-picker"><input type="text" id="color-body" class="form-input" maxlength="7"></div>
+            </div>
+          </div>
+
+          <div class="admin-dashboard-head" style="margin-top:44px">
+            <div>
+              <div class="eyebrow">Admin</div>
+              <h3>Glass Intensity</h3>
+              <p class="section-sub">One dial for the ticker bar + navbar glass — left is Clear (more see-through), right is Tinted (more opaque, higher contrast).</p>
+            </div>
+          </div>
+          <div class="admin-glass-slider-wrap">
+            <span class="admin-glass-slider-label">Clear</span>
+            <input type="range" id="glass-intensity" min="0" max="100" step="5">
+            <span class="admin-glass-slider-label">Tinted</span>
+          </div>
+
+          <div class="form-status" id="colors-status" role="status" style="margin-top:20px"></div>
+          <button type="button" class="btn btn-primary" id="colors-save-btn">Save Colors &amp; Glass</button>
+        </div>
+
+        <!-- ============ BACKGROUND ============ -->
+        <div id="admin-panel-background" class="admin-panel" style="display:none">
+          <div class="admin-dashboard-head">
+            <div>
+              <div class="eyebrow">Admin</div>
+              <h2>Website Background</h2>
+              <p class="section-sub">Applies site-wide, behind every section (separate from the hero banner image).</p>
+            </div>
+          </div>
+          <div class="device-btn-group" id="bg-type-toggle">
+            <button type="button" class="device-btn" data-bgtype="default">Default</button>
+            <button type="button" class="device-btn" data-bgtype="solid">Solid Color</button>
+            <button type="button" class="device-btn" data-bgtype="gradient">Gradient</button>
+            <button type="button" class="device-btn" data-bgtype="image">Image</button>
+          </div>
+
+          <div id="bg-solid-fields" class="admin-form-grid" style="margin-top:18px; display:none">
+            <div class="form-group">
+              <label class="form-label" for="bg-solid">Solid Color</label>
+              <div class="admin-color-input"><input type="color" id="bg-solid-picker"><input type="text" id="bg-solid" class="form-input" maxlength="7"></div>
+            </div>
+          </div>
+
+          <div id="bg-gradient-fields" class="admin-form-grid" style="margin-top:18px; display:none">
+            <div class="form-group">
+              <label class="form-label" for="bg-gradient-from">Gradient From</label>
+              <div class="admin-color-input"><input type="color" id="bg-gradient-from-picker"><input type="text" id="bg-gradient-from" class="form-input" maxlength="7"></div>
+            </div>
+            <div class="form-group">
+              <label class="form-label" for="bg-gradient-to">Gradient To</label>
+              <div class="admin-color-input"><input type="color" id="bg-gradient-to-picker"><input type="text" id="bg-gradient-to" class="form-input" maxlength="7"></div>
+            </div>
+            <div class="form-group full-width">
+              <label class="form-label" for="bg-gradient-angle">Angle — <span id="bg-gradient-angle-value">135°</span></label>
+              <input type="range" id="bg-gradient-angle" min="0" max="360" step="5">
+            </div>
+          </div>
+
+          <div id="bg-image-fields" style="margin-top:18px; display:none">
+            <div class="admin-preview-devicebar" data-preview-for="bg-image-preview-wrap">
+              <button type="button" class="device-btn is-active" data-device="desktop">Desktop</button>
+              <button type="button" class="device-btn" data-device="mobile">Mobile</button>
+            </div>
+            <div class="admin-hero-preview glass" id="bg-image-preview-wrap">
+              <img id="bg-image-preview-img" alt="Background image preview">
+            </div>
+            <div class="admin-hero-upload">
+              <label class="btn btn-secondary" for="bg-image-file-input">Choose Image&hellip;</label>
+              <input type="file" id="bg-image-file-input" accept="image/*" style="display:none">
+            </div>
+          </div>
+
+          <div class="form-status" id="background-status" role="status" style="margin-top:20px"></div>
+          <button type="button" class="btn btn-primary" id="background-save-btn">Save Background</button>
+        </div>
+
+        </div>
+      </div>
+
+    </div>
+  </section>
+</main>
+
+<script type="module" src="/js/admin.js"></script>
+<script type="module" src="/js/admin-shop.js"></script>
+</body>
+</html>
